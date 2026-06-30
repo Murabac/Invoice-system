@@ -2,26 +2,132 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  :root,
+  [data-brand-theme="blue"] {
+    --color-primary-rgb: 0 166 255;
+    --color-primary-dark-rgb: 0 136 212;
+    --color-primary-light-rgb: 51 184 255;
+    --brand-header-bg: #25abe3;
+    --brand-header-border: #1e96c7;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  [data-brand-theme="gradient"] {
+    --color-primary-rgb: 38 166 154;
+    --color-primary-dark-rgb: 30 143 134;
+    --color-primary-light-rgb: 77 182 172;
+    --brand-header-bg: linear-gradient(
+      135deg,
+      #26a69a 0%,
+      #4db6ac 50%,
+      #66bb6a 100%
+    );
+    --brand-header-border: #26a69a;
+  }
+
+  body {
+    @apply bg-surface-muted text-gray-900 antialiased;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  [data-brand-theme="gradient"] .bg-primary.text-white {
+    background-image: linear-gradient(
+      135deg,
+      #26a69a 0%,
+      #4db6ac 50%,
+      #66bb6a 100%
+    );
+    background-color: transparent;
+  }
+
+  [data-brand-theme="gradient"] .bg-primary.text-white:hover {
+    background-image: linear-gradient(
+      135deg,
+      #1e8f86 0%,
+      #3da89e 50%,
+      #52a85d 100%
+    );
+    background-color: transparent;
+  }
+
+  [data-brand-theme="gradient"] .bg-primary\/10 {
+    background-image: linear-gradient(
+      135deg,
+      rgb(38 166 154 / 0.12) 0%,
+      rgb(77 182 172 / 0.12) 50%,
+      rgb(102 187 106 / 0.12) 100%
+    );
+    background-color: transparent;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .a4-sheet {
+    aspect-ratio: 210 / 297;
+    width: 100%;
+    max-width: 210mm;
+  }
+
+    @media print {
+    .no-print {
+      display: none !important;
+    }
+
+    .print-only {
+      display: block !important;
+    }
+
+    /* Print only the invoice document */
+    body * {
+      visibility: hidden;
+    }
+
+    #invoice-print-root,
+    #invoice-print-root * {
+      visibility: visible;
+    }
+
+    #invoice-print-root {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      min-height: 277mm;
+      height: 277mm;
+    }
+
+    body {
+      background: white !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    main {
+      display: block !important;
+      overflow: visible !important;
+      height: auto !important;
+    }
+
+    .invoice-preview-panel {
+      padding: 0 !important;
+      margin: 0 !important;
+      background: white !important;
+      overflow: visible !important;
+    }
+
+    .a4-sheet {
+      aspect-ratio: unset !important;
+      max-width: none !important;
+      width: 100% !important;
+      min-height: 0 !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      page-break-after: auto !important;
+    }
   }
 }
