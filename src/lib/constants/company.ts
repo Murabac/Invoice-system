@@ -2,9 +2,9 @@ export const COMPANY_INFO = {
   name: "Biloop Technology Innovation",
   addressLine1: "Hargaisa. Somaliland",
   addressLine2: "Ibrahim Koodbur, Badacas",
-  phone: "(252) 63-4749276",
-  contactName: "Abdirahman",
-  contactPhone: "063 4749276",
+  phone: "(252) 63-4412241",
+  contactName: "Mohamed",
+  contactPhone: "4412241",
 };
 
 export const DEFAULT_TERMS = [

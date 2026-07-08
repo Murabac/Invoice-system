@@ -13,6 +13,7 @@ interface NavLinkProps {
   matchPrefix?: boolean;
   /** Paths that must not activate this link even when the prefix matches */
   excludePaths?: string[];
+  onNavigate?: () => void;
 }
 
 export function NavLink({
@@ -21,6 +22,7 @@ export function NavLink({
   icon: Icon,
   matchPrefix,
   excludePaths,
+  onNavigate,
 }: NavLinkProps) {
   const pathname = usePathname();
   const [pending, setPending] = useState(false);
@@ -43,7 +45,10 @@ export function NavLink({
     <Link
       href={href}
       prefetch={true}
-      onClick={() => setPending(true)}
+      onClick={() => {
+        setPending(true);
+        onNavigate?.();
+      }}
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
         isActive

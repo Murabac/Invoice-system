@@ -10,7 +10,7 @@ export default function AddClientPage() {
         title="Add Client"
         description="Create a new client for quotations and invoices"
       />
-      <div className="flex-1 overflow-y-auto p-8">
+      <div className="page-content">
         <div className="mx-auto max-w-4xl">
           <Link
             href="/clients"

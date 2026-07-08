@@ -201,12 +201,12 @@ export function DocumentWorkspace({
     <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
       {/* Left panel — form */}
       <div className="no-print w-full shrink-0 overflow-y-auto border-r border-gray-200 bg-surface lg:w-[420px] xl:w-[480px]">
-        <div className="space-y-6 p-6">
-          <div className="flex items-center justify-between">
+        <div className="space-y-6 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-lg font-semibold text-gray-900">
               {initialDocument ? "Edit Document" : "Create Document"}
             </h2>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" onClick={handlePrint}>
                 <Printer className="h-4 w-4" />
                 Print
@@ -229,7 +229,7 @@ export function DocumentWorkspace({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Select
               label="Document Type"
               value={form.type}
@@ -293,7 +293,7 @@ export function DocumentWorkspace({
             />
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Input
               label="Issue Date"
               type="date"
@@ -432,7 +432,7 @@ export function DocumentWorkspace({
       </div>
 
       {/* Right panel — live preview */}
-      <div className="invoice-preview-panel flex-1 overflow-y-auto bg-gray-100 p-6 lg:p-8">
+      <div className="invoice-preview-panel flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:p-8">
         <div className="no-print mb-4 text-center">
           <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
             Live Document Preview

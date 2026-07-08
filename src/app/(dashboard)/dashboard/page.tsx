@@ -46,7 +46,7 @@ export default async function DashboardPage() {
           </Link>
         }
       />
-      <div className="flex-1 overflow-y-auto p-8">
+      <div className="page-content">
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {cards.map(({ label, value, icon: Icon, color }) => (
             <div

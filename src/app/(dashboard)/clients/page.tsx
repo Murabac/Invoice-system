@@ -22,7 +22,7 @@ export default async function ClientsListPage() {
           </Link>
         }
       />
-      <div className="flex-1 overflow-y-auto p-8">
+      <div className="page-content">
         <div className="mx-auto max-w-5xl">
           <ClientsList clients={clients} />
         </div>

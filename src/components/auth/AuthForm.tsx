@@ -32,7 +32,7 @@ export function AuthForm() {
 
         <form
           action={handleSubmit}
-          className="space-y-4 rounded-2xl border border-gray-200 bg-surface p-8 shadow-panel"
+          className="space-y-4 rounded-2xl border border-gray-200 bg-surface p-6 shadow-panel sm:p-8"
         >
           {error && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

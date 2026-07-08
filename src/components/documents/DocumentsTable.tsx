@@ -107,7 +107,7 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
             { value: "quotation", label: "Quotations" },
             { value: "invoice", label: "Invoices" },
           ]}
-          className="w-44"
+          className="w-full sm:w-44"
         />
         <Select
           label="Status"
@@ -119,12 +119,12 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
             { value: "issued", label: "Issued" },
             { value: "paid", label: "Paid" },
           ]}
-          className="w-44"
+          className="w-full sm:w-44"
         />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-surface shadow-card">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-surface shadow-card">
+        <table className="w-full min-w-[720px] text-sm">
           <thead>
             <tr className="border-b border-gray-200 bg-surface-muted/50 text-left">
               <th className="px-6 py-3 font-semibold text-gray-700">Number</th>

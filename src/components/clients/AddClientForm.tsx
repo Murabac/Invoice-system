@@ -44,7 +44,7 @@ export function AddClientForm() {
     <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
       <form
         onSubmit={handleSubmit}
-        className="rounded-2xl border border-gray-200 bg-surface p-8 shadow-card"
+        className="rounded-2xl border border-gray-200 bg-surface p-4 shadow-card sm:p-6 lg:p-8"
       >
         <div className="mb-8">
           <div className="inline-flex rounded-xl bg-primary/10 p-3">

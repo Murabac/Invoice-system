@@ -48,7 +48,7 @@ export default function DocumentsPage({ searchParams }: DocumentsPageProps) {
           </Link>
         }
       />
-      <div className="flex-1 overflow-y-auto p-8">
+      <div className="page-content">
         <Suspense
           key={`${type}-${status}`}
           fallback={<DocumentsTableSkeleton />}

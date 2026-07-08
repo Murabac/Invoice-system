@@ -40,8 +40,8 @@ export function UsersList({ users, currentUserId }: UsersListProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-surface shadow-card">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-surface shadow-card">
+      <table className="w-full min-w-[640px] text-sm">
         <thead>
           <tr className="border-b border-gray-200 bg-surface-muted/50 text-left">
             <th className="px-6 py-3 font-semibold text-gray-700">User</th>

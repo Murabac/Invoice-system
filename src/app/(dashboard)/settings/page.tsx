@@ -29,7 +29,7 @@ export default async function SettingsPage() {
         title="Settings"
         description="Customize your branding across the app and invoices"
       />
-      <div className="flex-1 overflow-y-auto p-8">
+      <div className="page-content">
         <div className="mx-auto max-w-3xl space-y-6">
           <DashboardHeaderSetting initialText={dashboardHeaderText} />
 

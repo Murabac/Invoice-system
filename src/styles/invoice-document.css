@@ -168,6 +168,30 @@
   margin-bottom: 1.5em;
 }
 
+@media (max-width: 640px) {
+  .invoice-document {
+    padding: 6mm;
+    font-size: 14px;
+  }
+
+  .invoice-document .invoice-header-row,
+  .invoice-document .invoice-recipient-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .invoice-document table.meta,
+  .invoice-document table.balance {
+    width: 100%;
+    max-width: none;
+    float: none;
+  }
+
+  .invoice-document .invoice-logo-wrap {
+    max-width: 100%;
+  }
+}
+
 .invoice-document .invoice-recipient-row address {
   flex: 1;
   min-width: 0;

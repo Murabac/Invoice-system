@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Dancing_Script } from "next/font/google";
 import "./globals.css";
 
@@ -11,6 +11,11 @@ const dancingScript = Dancing_Script({
 export const metadata: Metadata = {
   title: "Biloop Invoice System",
   description: "Professional invoice and quotation management by Biloop Technology Innovators",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

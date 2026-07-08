@@ -17,6 +17,7 @@ interface NavDropdownProps {
   icon: ComponentType<{ className?: string }>;
   basePath: string;
   items: NavDropdownItem[];
+  onNavigate?: () => void;
 }
 
 export function NavDropdown({
@@ -24,6 +25,7 @@ export function NavDropdown({
   icon: Icon,
   basePath,
   items,
+  onNavigate,
 }: NavDropdownProps) {
   const pathname = usePathname();
   const isSectionActive = pathname.startsWith(basePath);
@@ -80,7 +82,10 @@ export function NavDropdown({
                   key={href}
                   href={href}
                   prefetch={true}
-                  onClick={() => setPendingHref(href)}
+                  onClick={() => {
+                    setPendingHref(href);
+                    onNavigate?.();
+                  }}
                   className={cn(
                     "flex items-center gap-3 rounded-lg py-2 pl-6 pr-3 text-sm font-medium transition-colors",
                     isActive

@@ -67,6 +67,10 @@
     text-wrap: balance;
   }
 
+  .page-content {
+    @apply flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8;
+  }
+
   .a4-sheet {
     aspect-ratio: 210 / 297;
     width: 100%;
