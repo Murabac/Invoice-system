@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { DocumentCanvas } from "./DocumentCanvas";
 import { ClientLogoUpload } from "@/components/clients/ClientLogoUpload";
+import { TermsEditor } from "@/components/terms/TermsEditor";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -24,6 +25,12 @@ import {
   createEmptyLineItem,
   todayISO,
 } from "@/lib/utils/format";
+import {
+  getDefaultTerms,
+  initialDocumentNotes,
+  parseTermsLines,
+  termsToNotes,
+} from "@/lib/utils/terms";
 import type {
   Client,
   DocumentFormState,
@@ -43,7 +50,8 @@ interface DocumentWorkspaceProps {
 function buildInitialState(
   initial: DocumentWithRelations | null | undefined,
   defaultDocumentNumber: string,
-  defaultType: DocumentType
+  defaultType: DocumentType,
+  defaultTerms: string[]
 ): DocumentFormState {
   if (initial) {
     return {
@@ -55,7 +63,7 @@ function buildInitialState(
       client_id: initial.client_id ?? "",
       tax_rate: Number(initial.tax_rate),
       has_stamp: initial.has_stamp,
-      notes: initial.notes ?? "",
+      notes: initialDocumentNotes(initial.notes, defaultTerms),
       items:
         initial.document_items.length > 0
           ? initial.document_items.map((item) => ({
@@ -77,7 +85,7 @@ function buildInitialState(
     client_id: "",
     tax_rate: 0,
     has_stamp: false,
-    notes: "",
+    notes: termsToNotes(defaultTerms),
     items: [createEmptyLineItem()],
   };
 }
@@ -95,7 +103,12 @@ export function DocumentWorkspace({
   const [success, setSuccess] = useState<string | null>(null);
 
   const [form, setForm] = useState<DocumentFormState>(() =>
-    buildInitialState(initialDocument, defaultDocumentNumber, defaultType)
+    buildInitialState(
+      initialDocument,
+      defaultDocumentNumber,
+      defaultType,
+      getDefaultTerms(profile)
+    )
   );
   const [clientLogoUrls, setClientLogoUrls] = useState<Record<string, string>>(
     () =>
@@ -410,12 +423,19 @@ export function DocumentWorkspace({
             </div>
           </div>
 
-          <Input
-            label="Terms & Notes (optional)"
-            value={form.notes}
-            onChange={(e) => updateForm("notes", e.target.value)}
-            placeholder="One term per line (optional — defaults to standard terms)"
-          />
+          <div>
+            <p className="mb-2 block text-sm font-medium text-gray-700">
+              Terms & Conditions
+            </p>
+            <p className="mb-3 text-xs text-gray-500">
+              Edit or remove terms for this document. Defaults come from Settings.
+            </p>
+            <TermsEditor
+              terms={parseTermsLines(form.notes)}
+              onChange={(terms) => updateForm("notes", termsToNotes(terms))}
+              disabled={isPending}
+            />
+          </div>
 
           {initialDocument?.type === "quotation" && (
             <Button

@@ -2,64 +2,35 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Check, Palette } from "lucide-react";
-import { updateInvoiceHeaderTheme } from "@/lib/actions/profiles";
-import type { InvoiceHeaderTheme } from "@/lib/types/database";
+import { Check, Stamp } from "lucide-react";
+import { updateInvoiceStampPreset } from "@/lib/actions/profiles";
+import { STAMP_PRESET_ORDER, STAMP_PRESETS } from "@/lib/constants/stamps";
+import type { InvoiceStampPreset } from "@/lib/types/database";
 import { cn } from "@/lib/utils/cn";
 
-interface InvoiceHeaderThemeSettingProps {
-  initialTheme: InvoiceHeaderTheme;
+interface StampPresetSettingProps {
+  initialPreset: InvoiceStampPreset;
 }
 
-const themes: {
-  id: InvoiceHeaderTheme;
-  label: string;
-  description: string;
-  previewClass: string;
-}[] = [
-  {
-    id: "blue",
-    label: "Technology Blue",
-    description: "Solid blue headers on invoices and quotations.",
-    previewClass: "bg-[#25abe3]",
-  },
-  {
-    id: "gradient",
-    label: "Green Gradient",
-    description: "Teal-to-green gradient headers on invoices and quotations.",
-    previewClass:
-      "bg-[linear-gradient(135deg,#26a69a_0%,#4db6ac_50%,#66bb6a_100%)]",
-  },
-  {
-    id: "h24",
-    label: "H24 Technology",
-    description: "Sky-blue gradient matching the H24 Technology brand.",
-    previewClass:
-      "bg-[linear-gradient(135deg,#6EB1FF_0%,#4DAFFF_100%)]",
-  },
-];
-
-export function InvoiceHeaderThemeSetting({
-  initialTheme,
-}: InvoiceHeaderThemeSettingProps) {
+export function StampPresetSetting({ initialPreset }: StampPresetSettingProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [theme, setTheme] = useState<InvoiceHeaderTheme>(initialTheme);
+  const [preset, setPreset] = useState<InvoiceStampPreset>(initialPreset);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  function handleSelect(nextTheme: InvoiceHeaderTheme) {
-    if (nextTheme === theme || isPending) return;
+  function handleSelect(nextPreset: InvoiceStampPreset) {
+    if (nextPreset === preset || isPending) return;
 
-    setTheme(nextTheme);
+    setPreset(nextPreset);
     setError(null);
     setSaved(false);
 
     startTransition(async () => {
-      const result = await updateInvoiceHeaderTheme(nextTheme);
+      const result = await updateInvoiceStampPreset(nextPreset);
       if (result.error) {
         setError(result.error);
-        setTheme(initialTheme);
+        setPreset(initialPreset);
         return;
       }
       setSaved(true);
@@ -71,21 +42,20 @@ export function InvoiceHeaderThemeSetting({
     <div className="rounded-2xl border border-gray-200 bg-surface p-6 shadow-card">
       <div className="flex items-start gap-3">
         <div className="rounded-xl bg-primary/10 p-2.5">
-          <Palette className="h-5 w-5 text-primary" />
+          <Stamp className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">
-            Brand Color Theme
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900">Official Stamp</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Applies across the dashboard, sidebar, buttons, and invoice document headers.
+            Choose which stamp appears on invoices when the official stamp overlay is enabled.
           </p>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {themes.map(({ id, label, description, previewClass }) => {
-          const isSelected = theme === id;
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        {STAMP_PRESET_ORDER.map((id) => {
+          const { label, description, url } = STAMP_PRESETS[id];
+          const isSelected = preset === id;
 
           return (
             <button
@@ -101,12 +71,14 @@ export function InvoiceHeaderThemeSetting({
                 isPending && "opacity-70"
               )}
             >
-              <div
-                className={cn(
-                  "mb-4 h-10 rounded-lg shadow-inner",
-                  previewClass
-                )}
-              />
+              <div className="mb-4 flex h-28 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-3 shadow-inner">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt={label}
+                  className="max-h-full max-w-full object-contain"
+                />
+              </div>
               <p className="font-medium text-gray-900">{label}</p>
               <p className="mt-1 text-sm text-gray-500">{description}</p>
               {isSelected && (
@@ -124,7 +96,7 @@ export function InvoiceHeaderThemeSetting({
       {saved && !error && (
         <p className="mt-4 inline-flex items-center gap-1 text-sm text-green-600">
           <Check className="h-4 w-4" />
-          Theme saved
+          Stamp saved
         </p>
       )}
     </div>

@@ -1,6 +1,7 @@
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { getAuthUser } from "@/lib/supabase/get-user";
 import { getProfile } from "@/lib/actions/profiles";
+import { getCompanyDisplayName } from "@/lib/constants/company";
 import type { InvoiceHeaderTheme } from "@/lib/types/database";
 
 export default async function DashboardLayout({
@@ -16,7 +17,7 @@ export default async function DashboardLayout({
   return (
     <DashboardShell
       dashboardLogoUrl={profile?.dashboard_logo_url}
-      dashboardHeaderText={profile?.dashboard_header_text}
+      dashboardHeaderText={getCompanyDisplayName(profile)}
       brandTheme={brandTheme}
       userRole={profile?.role ?? null}
     >

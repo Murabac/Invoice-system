@@ -8,7 +8,17 @@ import {
   formatDate,
   formatPriceDisplay,
 } from "@/lib/utils/format";
-import { COMPANY_INFO, DEFAULT_TERMS } from "@/lib/constants/company";
+import {
+  COMPANY_INFO,
+  formatContactPhones,
+  getCompanyDisplayName,
+  getInvoiceContact,
+} from "@/lib/constants/company";
+import { getStampUrl } from "@/lib/constants/stamps";
+import {
+  getDefaultTerms,
+  resolveDocumentTerms,
+} from "@/lib/utils/terms";
 import type {
   Client,
   DocumentType,
@@ -32,12 +42,6 @@ export interface DocumentCanvasProps {
   notes?: string;
 }
 
-function parseTerms(notes?: string): string[] {
-  if (!notes?.trim()) return DEFAULT_TERMS;
-  const lines = notes.split("\n").filter((line) => line.trim());
-  return lines.length > 0 ? lines : DEFAULT_TERMS;
-}
-
 export function DocumentCanvas({
   type,
   status,
@@ -59,11 +63,14 @@ export function DocumentCanvas({
 
   const companyLogo = profile?.logo_url || "/logo.jpeg";
   const clientLogo = client?.logo_url || "/client.png";
-  const companyName = profile?.company_name || COMPANY_INFO.name;
+  const companyName = getCompanyDisplayName(profile);
   const docLabel = type === "quotation" ? "Quotation" : "Invoice";
-  const terms = parseTerms(notes);
+  const terms = resolveDocumentTerms(notes, getDefaultTerms(profile));
   const lineItems = items.filter((i) => i.product_name.trim());
   const headerTheme = profile?.invoice_header_theme ?? "blue";
+  const stampUrl = getStampUrl(profile?.invoice_stamp);
+  const contact = getInvoiceContact(profile);
+  const contactPhones = formatContactPhones(contact);
 
   return (
     <div
@@ -72,7 +79,7 @@ export function DocumentCanvas({
     >
       {showStamp && (
         <div className="invoice-stamp">
-          <StampOverlay className="h-[120px] w-[120px]" />
+          <StampOverlay className="h-[120px] w-[120px]" src={stampUrl} />
         </div>
       )}
 
@@ -236,16 +243,18 @@ export function DocumentCanvas({
       </div>
 
       <div className="invoice-bottom">
-        <aside className="asideHeader">
-          <h1>Terms And Conditions</h1>
-          <div>
-            {terms.map((term, index) => (
-              <p key={index}>
-                <span>{index + 1}:</span> {term}
-              </p>
-            ))}
-          </div>
-        </aside>
+        {terms.length > 0 && (
+          <aside className="asideHeader">
+            <h1>Terms And Conditions</h1>
+            <div>
+              {terms.map((term, index) => (
+                <p key={index}>
+                  <span>{index + 1}:</span> {term}
+                </p>
+              ))}
+            </div>
+          </aside>
+        )}
 
         <footer className="footer">
           <div className="invoice-section-bar">
@@ -254,8 +263,7 @@ export function DocumentCanvas({
               {type === "quotation" ? "quotation" : "invoice"}
             </p>
             <p>
-              Contact {COMPANY_INFO.contactName} on Tel :{" "}
-              {COMPANY_INFO.contactPhone}
+              Contact {contact.contactName} on Tel : {contactPhones}
             </p>
           </div>
         </footer>

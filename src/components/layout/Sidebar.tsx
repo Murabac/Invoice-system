@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { signOut } from "@/lib/actions/auth";
 import { canAccessSettings, isSuperAdmin } from "@/lib/auth/roles";
+import { DEFAULT_COMPANY_NAME } from "@/lib/constants/company";
 import type { UserRole } from "@/lib/types/database";
 import { cn } from "@/lib/utils/cn";
 import { NavDropdown } from "./NavDropdown";
@@ -54,8 +55,7 @@ export function Sidebar({
   mobileOpen = false,
   onNavigate,
 }: SidebarProps) {
-  const brandName =
-    dashboardHeaderText?.trim() || "Biloop Technology Innovators";
+  const brandName = dashboardHeaderText?.trim() || DEFAULT_COMPANY_NAME;
   const showSettings = canAccessSettings(userRole);
   const showUsers = isSuperAdmin(userRole);
 

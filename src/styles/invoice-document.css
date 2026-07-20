@@ -70,6 +70,22 @@
   border-color: var(--brand-header-border);
 }
 
+.invoice-document.invoice-theme-h24 {
+  --brand-header-bg: linear-gradient(135deg, #6eb1ff 0%, #4dafff 100%);
+  --brand-header-border: #4dafff;
+}
+
+.invoice-document.invoice-theme-h24 > header > h1,
+.invoice-document.invoice-theme-h24 aside.asideHeader > h1,
+.invoice-document.invoice-theme-h24 footer.footer .invoice-section-bar,
+.invoice-document.invoice-theme-h24 th {
+  background: var(--brand-header-bg);
+}
+
+.invoice-document.invoice-theme-h24 th {
+  border-color: var(--brand-header-border);
+}
+
 .invoice-document > header > h1 {
   margin: 0 0 0.85em;
   padding: 0.55em 0.6em;
@@ -484,6 +500,14 @@
   .invoice-document.invoice-theme-gradient aside.asideHeader > h1,
   .invoice-document.invoice-theme-gradient footer.footer .invoice-section-bar,
   .invoice-document.invoice-theme-gradient th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .invoice-document.invoice-theme-h24 > header > h1,
+  .invoice-document.invoice-theme-h24 aside.asideHeader > h1,
+  .invoice-document.invoice-theme-h24 footer.footer .invoice-section-bar,
+  .invoice-document.invoice-theme-h24 th {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }

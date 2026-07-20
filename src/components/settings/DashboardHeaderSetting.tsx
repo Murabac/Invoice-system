@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Check, Type } from "lucide-react";
 import { updateDashboardHeaderText } from "@/lib/actions/profiles";
+import { DEFAULT_COMPANY_NAME } from "@/lib/constants/company";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
@@ -17,6 +18,10 @@ export function DashboardHeaderSetting({ initialText }: DashboardHeaderSettingPr
   const [text, setText] = useState(initialText);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setText(initialText);
+  }, [initialText]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,10 +50,10 @@ export function DashboardHeaderSetting({ initialText }: DashboardHeaderSettingPr
         </div>
         <div>
           <h2 className="text-lg font-semibold text-gray-900">
-            Dashboard Header Text
+            Company Header Text
           </h2>
           <p className="mt-1 text-sm text-gray-500">
-            Shown next to your logo in the sidebar navigation.
+            Shown in the sidebar and as the company name on invoice and quotation headers.
           </p>
         </div>
       </div>
@@ -61,7 +66,7 @@ export function DashboardHeaderSetting({ initialText }: DashboardHeaderSettingPr
             setText(e.target.value);
             setSaved(false);
           }}
-          placeholder="Biloop Technology Innovators"
+          placeholder={DEFAULT_COMPANY_NAME}
         />
 
         {error && (
