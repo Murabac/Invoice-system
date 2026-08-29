@@ -113,19 +113,22 @@ export function DocumentCanvas({
         <h1>Recipient</h1>
         <div className="invoice-recipient-row">
           <div className="invoice-client-block">
-            <div className="invoice-client-logo-wrap">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={clientLogo}
-                alt={client?.name ?? "Client"}
-                className="client-logo"
-              />
-            </div>
-            {client?.address && (
+            <div className="invoice-client-row">
               <address>
-                <p>{client.address}</p>
+                {client?.name && (
+                  <p className="invoice-client-name">{client.name}</p>
+                )}
+                {client?.address && <p>{client.address}</p>}
               </address>
-            )}
+              <div className="invoice-client-logo-wrap">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={clientLogo}
+                  alt={client?.name ?? "Client"}
+                  className="client-logo"
+                />
+              </div>
+            </div>
           </div>
 
           <table className="meta">
