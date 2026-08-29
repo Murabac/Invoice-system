@@ -1,5 +1,6 @@
 "use server";
 
+import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAuthUser, getSupabase } from "@/lib/supabase/get-user";
@@ -18,32 +19,34 @@ import type {
   Client,
 } from "@/lib/types/database";
 
+function buildRandomDocumentNumber(type: DocumentType): string {
+  const prefix = type === "quotation" ? "Q" : "I";
+  const num = randomInt(1, 10000);
+  return `${prefix}${padDocumentNumber(num)}`;
+}
+
 export async function getNextDocumentNumber(
   type: DocumentType
 ): Promise<string> {
   const supabase = await getSupabase();
   const user = await getAuthUser();
 
-  if (!user) return padDocumentNumber(1);
+  if (!user) return buildRandomDocumentNumber(type);
 
-  const prefix = type === "quotation" ? "Q" : "I";
+  for (let attempt = 0; attempt < 25; attempt++) {
+    const candidate = buildRandomDocumentNumber(type);
+    const { data } = await supabase
+      .from("documents")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("document_number", candidate)
+      .maybeSingle();
 
-  const { data } = await supabase
-    .from("documents")
-    .select("document_number")
-    .eq("user_id", user.id)
-    .eq("type", type)
-    .order("created_at", { ascending: false })
-    .limit(1);
-
-  if (!data || data.length === 0) {
-    return `${prefix}${padDocumentNumber(1)}`;
+    if (!data) return candidate;
   }
 
-  const last = data[0].document_number;
-  const match = last.match(/(\d+)$/);
-  const nextNum = match ? parseInt(match[1], 10) + 1 : 1;
-  return `${prefix}${padDocumentNumber(nextNum)}`;
+  const prefix = type === "quotation" ? "Q" : "I";
+  return `${prefix}#${String(Date.now()).slice(-6)}`;
 }
 
 export async function getDocuments(filters?: {
