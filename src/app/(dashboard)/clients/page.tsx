@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Users } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { ClientsList } from "@/components/clients/ClientsList";
 import { Button } from "@/components/ui/Button";
@@ -11,8 +11,9 @@ export default async function ClientsListPage() {
   return (
     <>
       <Header
-        title="Clients List"
+        title="Clients"
         description="View and manage your billing clients"
+        icon={Users}
         actions={
           <Link href="/clients/new">
             <Button>

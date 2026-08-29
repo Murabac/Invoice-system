@@ -109,17 +109,18 @@ export function ClientsList({ clients }: ClientsListProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-surface px-5 py-4 shadow-card">
-        <div>
-          <p className="text-sm font-medium text-gray-500">Total clients</p>
-          <p className="text-2xl font-bold text-gray-900">{clients.length}</p>
+      <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-surface px-5 py-4 shadow-card">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <Building2 className="h-5 w-5 text-primary" />
         </div>
-        <Link href="/clients/new">
-          <Button variant="outline" size="sm">
-            <UserPlus className="h-4 w-4" />
-            Add Client
-          </Button>
-        </Link>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium leading-none text-gray-500">
+            Total clients
+          </p>
+          <p className="mt-1.5 text-2xl font-bold leading-none text-gray-900">
+            {clients.length}
+          </p>
+        </div>
       </div>
 
       {error && (
@@ -173,8 +174,8 @@ export function ClientsList({ clients }: ClientsListProps) {
               ) : (
                 <>
                   <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-6 py-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex min-w-0 items-start gap-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex min-w-0 flex-1 items-center gap-4">
                         <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                           <Image
                             src={logoUrl || "/client.png"}
@@ -184,25 +185,25 @@ export function ClientsList({ clients }: ClientsListProps) {
                             unoptimized={Boolean(logoUrl?.startsWith("http"))}
                           />
                         </div>
-                        <div className="min-w-0">
-                          <h3 className="truncate font-semibold text-gray-900">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="truncate text-lg font-semibold leading-tight text-gray-900">
                             {client.name}
                           </h3>
                           {client.address ? (
-                            <p className="mt-1.5 flex items-start gap-1.5 text-sm text-gray-500">
-                              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                            <p className="mt-1.5 flex items-center gap-1.5 text-sm leading-snug text-gray-500">
+                              <MapPin className="h-3.5 w-3.5 shrink-0" />
                               <span className="whitespace-pre-line line-clamp-2">
                                 {client.address}
                               </span>
                             </p>
                           ) : (
-                            <p className="mt-1.5 text-sm italic text-gray-400">
+                            <p className="mt-1.5 text-sm italic leading-snug text-gray-400">
                               No address added
                             </p>
                           )}
                         </div>
                       </div>
-                      <div className="flex shrink-0 gap-1">
+                      <div className="flex shrink-0 items-center gap-1 self-center">
                         <Button
                           variant="ghost"
                           size="sm"

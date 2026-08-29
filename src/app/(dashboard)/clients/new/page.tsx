@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, UserPlus } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { AddClientForm } from "@/components/clients/AddClientForm";
 
@@ -9,6 +9,7 @@ export default function AddClientPage() {
       <Header
         title="Add Client"
         description="Create a new client for quotations and invoices"
+        icon={UserPlus}
       />
       <div className="page-content">
         <div className="mx-auto max-w-4xl">

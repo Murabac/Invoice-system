@@ -46,16 +46,18 @@ export function AddClientForm() {
         onSubmit={handleSubmit}
         className="rounded-2xl border border-gray-200 bg-surface p-4 shadow-card sm:p-6 lg:p-8"
       >
-        <div className="mb-8">
-          <div className="inline-flex rounded-xl bg-primary/10 p-3">
+        <div className="mb-8 flex items-center gap-4">
+          <div className="shrink-0 rounded-xl bg-primary/10 p-3">
             <Building2 className="h-6 w-6 text-primary" />
           </div>
-          <h2 className="mt-4 text-xl font-semibold text-gray-900">
-            Client details
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Enter the billing name and address shown on documents.
-          </p>
+          <div className="min-w-0">
+            <h2 className="text-xl font-semibold leading-tight text-gray-900">
+              Client details
+            </h2>
+            <p className="mt-1 text-sm leading-snug text-gray-500">
+              Enter the billing name and address shown on documents.
+            </p>
+          </div>
         </div>
 
         {error && (
