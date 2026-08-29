@@ -173,12 +173,16 @@
 .invoice-document .invoice-logo-wrap {
   flex-shrink: 0;
   max-width: 45%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
 }
 
 .invoice-document .invoice-logo {
   display: block;
-  max-width: 240px;
-  width: 100%;
+  max-width: 200px;
+  max-height: 90px;
+  width: auto;
   height: auto;
   object-fit: contain;
 }
@@ -205,6 +209,23 @@
   margin-bottom: 1.5em;
 }
 
+.invoice-document .invoice-client-block {
+  flex: 1;
+  min-width: 0;
+  max-width: 42%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.invoice-document .invoice-client-logo-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.5em;
+}
+
 @media (max-width: 640px) {
   .invoice-document {
     padding: 6mm;
@@ -215,6 +236,10 @@
   .invoice-document .invoice-recipient-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .invoice-document .invoice-client-block {
+    max-width: 100%;
   }
 
   .invoice-document table.meta,
@@ -232,18 +257,18 @@
 .invoice-document .invoice-recipient-row address {
   flex: 1;
   min-width: 0;
-  font-size: 1.05em;
-  font-weight: bold;
+  font-size: 0.88em;
+  font-weight: normal;
   font-style: normal;
 }
 
 .invoice-document .client-logo {
   display: block;
-  max-width: 300px;
-  width: 100%;
+  max-width: 150px;
+  max-height: 100px;
+  width: auto;
   height: auto;
   object-fit: contain;
-  margin-bottom: 0.5em;
 }
 
 .invoice-document .invoice-recipient-row address p {
@@ -258,6 +283,7 @@
   width: 42%;
   max-width: 280px;
   margin: 0;
+  align-self: flex-start;
 }
 
 .invoice-document table.meta th {
@@ -498,7 +524,7 @@
 
   .invoice-document .invoice-logo,
   .invoice-document .client-logo {
-    max-width: 300px !important;
+    max-width: 150px !important;
     max-height: 90px !important;
     object-fit: contain;
   }

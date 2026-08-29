@@ -112,18 +112,21 @@ export function DocumentCanvas({
         <article>
         <h1>Recipient</h1>
         <div className="invoice-recipient-row">
-          <address>
-            <p className="capitalize">
+          <div className="invoice-client-block">
+            <div className="invoice-client-logo-wrap">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={clientLogo}
                 alt={client?.name ?? "Client"}
                 className="client-logo"
-                width={300}
               />
-            </p>
-            {client?.address && <p>{client.address}</p>}
-          </address>
+            </div>
+            {client?.address && (
+              <address>
+                <p>{client.address}</p>
+              </address>
+            )}
+          </div>
 
           <table className="meta">
             <tbody>
