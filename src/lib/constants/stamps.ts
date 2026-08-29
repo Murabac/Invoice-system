@@ -14,9 +14,14 @@ export const STAMP_PRESETS: Record<
     description: "Sky-blue H24 Technology official stamp.",
     url: "/stamp-h24.png",
   },
+  m2b: {
+    label: "M2B Technology",
+    description: "Navy and gold M2B Technology official stamp.",
+    url: "/stamp-m2b.png",
+  },
 };
 
-export const STAMP_PRESET_ORDER: InvoiceStampPreset[] = ["biloop", "h24"];
+export const STAMP_PRESET_ORDER: InvoiceStampPreset[] = ["biloop", "h24", "m2b"];
 
 export function getStampUrl(
   preset: InvoiceStampPreset | null | undefined

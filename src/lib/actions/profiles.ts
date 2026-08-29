@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { getAuthUser, getSupabase } from "@/lib/supabase/get-user";
 import {
-  logoPresetToUrl,
-  type LogoPreset,
-} from "@/lib/constants/logos";
+  COMPANY_PRESETS,
+  type CompanyPresetId,
+} from "@/lib/constants/companies";
+import { logoPresetToUrl, type LogoPreset } from "@/lib/constants/logos";
 import { DEFAULT_TERMS, COMPANY_INFO } from "@/lib/constants/company";
 import type { InvoiceHeaderTheme, InvoiceStampPreset, Profile } from "@/lib/types/database";
 
@@ -78,6 +79,9 @@ async function ensureProfileUpdate(
       | "contact_name"
       | "contact_phone_1"
       | "contact_phone_2"
+      | "business_address_line1"
+      | "business_address_line2"
+      | "business_phone"
       | "dashboard_logo_url"
       | "logo_url"
     >
@@ -109,6 +113,11 @@ async function ensureProfileUpdate(
       contact_name: updates.contact_name ?? COMPANY_INFO.contactName,
       contact_phone_1: updates.contact_phone_1 ?? COMPANY_INFO.contactPhone,
       contact_phone_2: updates.contact_phone_2 ?? COMPANY_INFO.contactPhone2,
+      business_address_line1:
+        updates.business_address_line1 ?? COMPANY_INFO.addressLine1,
+      business_address_line2:
+        updates.business_address_line2 ?? COMPANY_INFO.addressLine2,
+      business_phone: updates.business_phone ?? COMPANY_INFO.phone,
       logo_url: updates.logo_url ?? "/logo.jpeg",
       dashboard_logo_url: updates.dashboard_logo_url ?? "/logo.jpeg",
       role: "admin",
@@ -142,7 +151,7 @@ export async function updateInvoiceHeaderTheme(theme: InvoiceHeaderTheme) {
   const user = await getAuthUser();
   if (!user) return { error: "Unauthorized" };
 
-  if (theme !== "blue" && theme !== "gradient" && theme !== "h24") {
+  if (theme !== "blue" && theme !== "gradient" && theme !== "h24" && theme !== "m2b") {
     return { error: "Invalid theme" };
   }
 
@@ -159,7 +168,7 @@ export async function updateInvoiceStampPreset(preset: InvoiceStampPreset) {
   const user = await getAuthUser();
   if (!user) return { error: "Unauthorized" };
 
-  if (preset !== "biloop" && preset !== "h24") {
+  if (preset !== "biloop" && preset !== "h24" && preset !== "m2b") {
     return { error: "Invalid stamp" };
   }
 
@@ -212,6 +221,61 @@ export async function updateInvoiceContact(data: {
     contact_name,
     contact_phone_1,
     contact_phone_2,
+  });
+  if (result.error) return result;
+
+  revalidateLogoPaths();
+  return { success: true };
+}
+
+export async function applyCompanyPreset(presetId: CompanyPresetId) {
+  const user = await getAuthUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const preset = COMPANY_PRESETS[presetId];
+  if (!preset) return { error: "Invalid company preset" };
+
+  const result = await ensureProfileUpdate(user.id, {
+    dashboard_header_text: preset.headerText,
+    company_name: preset.headerText,
+    business_address_line1: preset.addressLine1,
+    business_address_line2: preset.addressLine2,
+    business_phone: preset.businessPhone,
+    contact_name: preset.contactName,
+    contact_phone_1: preset.contactPhone1,
+    contact_phone_2: preset.contactPhone2,
+    invoice_header_theme: preset.invoiceHeaderTheme,
+    invoice_stamp: preset.stampPreset,
+    default_terms: preset.defaultTerms,
+    logo_url: logoPresetToUrl(preset.logoPreset),
+    dashboard_logo_url: logoPresetToUrl(preset.logoPreset),
+  });
+  if (result.error) return result;
+
+  revalidateLogoPaths();
+  return { success: true };
+}
+
+export async function updateBusinessLocation(data: {
+  addressLine1: string;
+  addressLine2: string;
+  phone: string;
+}) {
+  const user = await getAuthUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const business_address_line1 = data.addressLine1.trim();
+  const business_address_line2 = data.addressLine2.trim();
+  const business_phone = data.phone.trim();
+
+  if (!business_address_line1) {
+    return { error: "Address line 1 is required" };
+  }
+
+  const result = await ensureProfileUpdate(user.id, {
+    business_address_line1,
+    business_address_line2,
+    business_phone,
   });
   if (result.error) return result;
 

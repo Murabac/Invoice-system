@@ -33,6 +33,19 @@
     --brand-header-border: #4dafff;
   }
 
+  [data-brand-theme="m2b"] {
+    --color-primary-rgb: 30 58 95;
+    --color-primary-dark-rgb: 22 44 74;
+    --color-primary-light-rgb: 42 80 130;
+    --brand-header-bg: linear-gradient(
+      135deg,
+      #1e3a5f 0%,
+      #2a5082 55%,
+      #d4af37 100%
+    );
+    --brand-header-border: #1e3a5f;
+  }
+
   body {
     @apply bg-surface-muted text-gray-900 antialiased;
   }
@@ -84,6 +97,35 @@
       135deg,
       rgb(110 177 255 / 0.12) 0%,
       rgb(77 175 255 / 0.12) 100%
+    );
+    background-color: transparent;
+  }
+
+  [data-brand-theme="m2b"] .bg-primary.text-white {
+    background-image: linear-gradient(
+      135deg,
+      #1e3a5f 0%,
+      #2a5082 55%,
+      #d4af37 100%
+    );
+    background-color: transparent;
+  }
+
+  [data-brand-theme="m2b"] .bg-primary.text-white:hover {
+    background-image: linear-gradient(
+      135deg,
+      #172f4d 0%,
+      #234469 55%,
+      #b8860b 100%
+    );
+    background-color: transparent;
+  }
+
+  [data-brand-theme="m2b"] .bg-primary\/10 {
+    background-image: linear-gradient(
+      135deg,
+      rgb(30 58 95 / 0.12) 0%,
+      rgb(212 175 55 / 0.12) 100%
     );
     background-color: transparent;
   }

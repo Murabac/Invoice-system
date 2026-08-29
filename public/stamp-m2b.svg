@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="m2bNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#2a5082"/>
+    </linearGradient>
+    <linearGradient id="m2bGold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b8860b"/>
+      <stop offset="100%" stop-color="#d4af37"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="200" cy="200" r="184" fill="none" stroke="url(#m2bNavy)" stroke-width="7" opacity="0.92"/>
+  <circle cx="200" cy="200" r="168" fill="none" stroke="url(#m2bGold)" stroke-width="3" opacity="0.9"/>
+
+  <polygon points="34,200 40,212 54,212 43,220 47,234 34,226 21,234 25,220 14,212 28,212" fill="url(#m2bGold)" opacity="0.9"/>
+  <polygon points="366,200 372,212 386,212 375,220 379,234 366,226 353,234 357,220 346,212 360,212" fill="url(#m2bGold)" opacity="0.9"/>
+
+  <text x="200" y="58" text-anchor="middle" fill="url(#m2bNavy)" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="800" letter-spacing="4" opacity="0.95">M2B</text>
+  <text x="200" y="352" text-anchor="middle" fill="url(#m2bGold)" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="4" opacity="0.95">TECHNOLOGY</text>
+
+  <text x="200" y="195" text-anchor="middle" fill="url(#m2bGold)" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="900" opacity="0.92">2</text>
+  <text x="148" y="200" text-anchor="middle" fill="url(#m2bNavy)" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="900" opacity="0.92">M</text>
+  <text x="252" y="200" text-anchor="middle" fill="url(#m2bNavy)" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="900" opacity="0.92">B</text>
+
+  <text x="200" y="268" text-anchor="middle" fill="url(#m2bNavy)" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="800" letter-spacing="3" opacity="0.88">ORIGINAL</text>
+  <text x="200" y="296" text-anchor="middle" fill="url(#m2bGold)" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" letter-spacing="2" opacity="0.9">ISSUED</text>
+</svg>

@@ -37,6 +37,13 @@ const themes: {
     previewClass:
       "bg-[linear-gradient(135deg,#6EB1FF_0%,#4DAFFF_100%)]",
   },
+  {
+    id: "m2b",
+    label: "M2B Technology",
+    description: "Navy and gold gradient matching the M2B Technology brand.",
+    previewClass:
+      "bg-[linear-gradient(135deg,#1e3a5f_0%,#2a5082_55%,#d4af37_100%)]",
+  },
 ];
 
 export function InvoiceHeaderThemeSetting({
@@ -83,7 +90,7 @@ export function InvoiceHeaderThemeSetting({
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {themes.map(({ id, label, description, previewClass }) => {
           const isSelected = theme === id;
 

@@ -8,8 +8,8 @@ export type Json =
 
 export type DocumentType = "quotation" | "invoice";
 export type DocumentStatus = "draft" | "issued" | "paid";
-export type InvoiceHeaderTheme = "blue" | "gradient" | "h24";
-export type InvoiceStampPreset = "biloop" | "h24";
+export type InvoiceHeaderTheme = "blue" | "gradient" | "h24" | "m2b";
+export type InvoiceStampPreset = "biloop" | "h24" | "m2b";
 export type UserRole = "super_admin" | "admin";
 
 export interface Database {
@@ -28,6 +28,9 @@ export interface Database {
           contact_name: string | null;
           contact_phone_1: string | null;
           contact_phone_2: string | null;
+          business_address_line1: string | null;
+          business_address_line2: string | null;
+          business_phone: string | null;
           website_url: string | null;
           email: string | null;
           role: UserRole;
@@ -46,6 +49,9 @@ export interface Database {
           contact_name?: string | null;
           contact_phone_1?: string | null;
           contact_phone_2?: string | null;
+          business_address_line1?: string | null;
+          business_address_line2?: string | null;
+          business_phone?: string | null;
           website_url?: string | null;
           email?: string | null;
           role?: UserRole;
@@ -64,6 +70,9 @@ export interface Database {
           contact_name?: string | null;
           contact_phone_1?: string | null;
           contact_phone_2?: string | null;
+          business_address_line1?: string | null;
+          business_address_line2?: string | null;
+          business_phone?: string | null;
           website_url?: string | null;
           email?: string | null;
           role?: UserRole;

@@ -14,6 +14,30 @@ export interface InvoiceContact {
   contactPhone2: string;
 }
 
+export interface BusinessLocation {
+  addressLine1: string;
+  addressLine2: string;
+  phone: string;
+}
+
+export function getBusinessLocation(
+  profile?:
+    | {
+        business_address_line1?: string | null;
+        business_address_line2?: string | null;
+        business_phone?: string | null;
+      }
+    | null
+): BusinessLocation {
+  return {
+    addressLine1:
+      profile?.business_address_line1?.trim() || COMPANY_INFO.addressLine1,
+    addressLine2:
+      profile?.business_address_line2?.trim() || COMPANY_INFO.addressLine2,
+    phone: profile?.business_phone?.trim() || COMPANY_INFO.phone,
+  };
+}
+
 export function getInvoiceContact(
   profile?:
     | {

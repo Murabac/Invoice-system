@@ -1,4 +1,4 @@
-export type LogoPreset = "biloop" | "alternate" | "h24";
+export type LogoPreset = "biloop" | "alternate" | "h24" | "m2b";
 export type LogoSelection = LogoPreset | "custom";
 
 export const LOGO_PRESETS: Record<
@@ -20,6 +20,11 @@ export const LOGO_PRESETS: Record<
     description: "H24 Technology logo.",
     url: "/logo-h24.png",
     previewClass: "bg-black",
+  },
+  m2b: {
+    label: "M2B Technology",
+    description: "M2B Technology logo.",
+    url: "/logo-m2b.png",
   },
 };
 

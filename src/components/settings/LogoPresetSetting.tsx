@@ -24,7 +24,7 @@ interface LogoPresetSettingProps {
   ) => Promise<{ error?: string; success?: boolean; url?: string }>;
 }
 
-const presetOrder: LogoPreset[] = ["biloop", "alternate", "h24"];
+const presetOrder: LogoPreset[] = ["biloop", "alternate", "h24", "m2b"];
 
 export function LogoPresetSetting({
   title,
@@ -115,7 +115,7 @@ export function LogoPresetSetting({
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {presetOrder.map((id) => {
           const {
             label,

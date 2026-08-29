@@ -9,8 +9,8 @@ import {
   formatPriceDisplay,
 } from "@/lib/utils/format";
 import {
-  COMPANY_INFO,
   formatContactPhones,
+  getBusinessLocation,
   getCompanyDisplayName,
   getInvoiceContact,
 } from "@/lib/constants/company";
@@ -71,6 +71,7 @@ export function DocumentCanvas({
   const stampUrl = getStampUrl(profile?.invoice_stamp);
   const contact = getInvoiceContact(profile);
   const contactPhones = formatContactPhones(contact);
+  const location = getBusinessLocation(profile);
 
   return (
     <div
@@ -89,11 +90,11 @@ export function DocumentCanvas({
           <address>
             <p>{companyName}</p>
             <p>
-              {COMPANY_INFO.addressLine1}
+              {location.addressLine1}
               <br />
-              {COMPANY_INFO.addressLine2}
+              {location.addressLine2}
             </p>
-            <p>{COMPANY_INFO.phone}</p>
+            <p>{location.phone}</p>
           </address>
           <div className="invoice-logo-wrap">
             {/* eslint-disable-next-line @next/next/no-img-element */}
