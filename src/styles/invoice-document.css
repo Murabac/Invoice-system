@@ -239,6 +239,29 @@
   color: #111;
 }
 
+.invoice-document .invoice-client-block--no-logo {
+  max-width: 50%;
+}
+
+.invoice-document .invoice-client-row--no-logo {
+  display: block;
+}
+
+.invoice-document .invoice-client-row--no-logo address {
+  width: 100%;
+}
+
+.invoice-document .invoice-client-name--prominent {
+  margin: 0 0 0.45em;
+  font-weight: 700;
+  font-size: 1.55em;
+  line-height: 1.25;
+  color: #111;
+  min-height: 2.75em;
+  display: flex;
+  align-items: center;
+}
+
 .invoice-document .invoice-client-logo-wrap {
   flex-shrink: 0;
   max-width: 45%;
@@ -548,6 +571,11 @@
     max-width: 150px !important;
     max-height: 90px !important;
     object-fit: contain;
+  }
+
+  .invoice-document .invoice-client-name--prominent {
+    font-size: 14pt !important;
+    min-height: 2.5em;
   }
 
   .invoice-document table {

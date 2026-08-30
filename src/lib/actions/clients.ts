@@ -60,7 +60,7 @@ export async function createClientRecord(data: {
       user_id: user.id,
       name: data.name,
       address: data.address ?? null,
-      logo_url: data.logo_url ?? "/client.png",
+      logo_url: data.logo_url ?? null,
     })
     .select()
     .single();

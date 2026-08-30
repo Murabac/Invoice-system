@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { Upload, Loader2 } from "lucide-react";
 import { uploadClientLogo } from "@/lib/actions/clients";
+import { hasClientLogo } from "@/lib/utils/client-logo";
 import { Button } from "@/components/ui/Button";
 
 interface ClientLogoUploadProps {
@@ -23,7 +24,7 @@ export function ClientLogoUpload({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const displayUrl = logoUrl || "/client.png";
+  const showLogo = hasClientLogo(logoUrl);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -52,14 +53,18 @@ export function ClientLogoUpload({
     <div className="rounded-lg border border-gray-200 bg-surface-muted/40 p-4">
       <p className="mb-2 text-sm font-medium text-gray-700">Client Logo</p>
       <div className="flex items-center gap-4">
-        <div className="relative h-14 w-32 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-white">
-          <Image
-            src={displayUrl}
-            alt={`${clientName} logo`}
-            fill
-            className="object-contain p-1"
-            unoptimized={displayUrl.startsWith("http")}
-          />
+        <div className="relative flex h-14 w-32 shrink-0 items-center justify-center overflow-hidden rounded-md border border-gray-200 bg-white">
+          {showLogo ? (
+            <Image
+              src={logoUrl!}
+              alt={`${clientName} logo`}
+              fill
+              className="object-contain p-1"
+              unoptimized={logoUrl!.startsWith("http")}
+            />
+          ) : (
+            <span className="px-2 text-center text-xs text-gray-400">No logo</span>
+          )}
         </div>
         <div className="flex-1">
           <input

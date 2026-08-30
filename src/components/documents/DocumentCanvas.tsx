@@ -26,6 +26,7 @@ import type {
   LineItemForm,
   Profile,
 } from "@/lib/types/database";
+import { hasClientLogo } from "@/lib/utils/client-logo";
 import { StampOverlay } from "./StampOverlay";
 
 export interface DocumentCanvasProps {
@@ -62,7 +63,7 @@ export function DocumentCanvas({
     hasStamp || (type === "invoice" && status === "issued") || status === "paid";
 
   const companyLogo = profile?.logo_url || "/logo.jpeg";
-  const clientLogo = client?.logo_url || "/client.png";
+  const showClientLogo = hasClientLogo(client?.logo_url);
   const companyName = getCompanyDisplayName(profile);
   const docLabel = type === "quotation" ? "Quotation" : "Invoice";
   const terms = resolveDocumentTerms(notes, getDefaultTerms(profile));
@@ -112,22 +113,32 @@ export function DocumentCanvas({
         <article>
         <h1>Recipient</h1>
         <div className="invoice-recipient-row">
-          <div className="invoice-client-block">
-            <div className="invoice-client-row">
+          <div
+            className={`invoice-client-block${showClientLogo ? "" : " invoice-client-block--no-logo"}`}
+          >
+            <div
+              className={`invoice-client-row${showClientLogo ? "" : " invoice-client-row--no-logo"}`}
+            >
               <address>
                 {client?.name && (
-                  <p className="invoice-client-name">{client.name}</p>
+                  <p
+                    className={`invoice-client-name${showClientLogo ? "" : " invoice-client-name--prominent"}`}
+                  >
+                    {client.name}
+                  </p>
                 )}
                 {client?.address && <p>{client.address}</p>}
               </address>
-              <div className="invoice-client-logo-wrap">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={clientLogo}
-                  alt={client?.name ?? "Client"}
-                  className="client-logo"
-                />
-              </div>
+              {showClientLogo && client?.logo_url && (
+                <div className="invoice-client-logo-wrap">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={client.logo_url}
+                    alt={client.name}
+                    className="client-logo"
+                  />
+                </div>
+              )}
             </div>
           </div>
 

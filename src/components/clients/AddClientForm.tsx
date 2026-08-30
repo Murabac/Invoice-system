@@ -105,8 +105,9 @@ export function AddClientForm() {
             <p className="text-sm font-semibold">Quick tip</p>
           </div>
           <p className="mt-3 text-sm leading-relaxed text-gray-600">
-            After creating a client, upload their logo from the Clients List.
-            Logos appear on quotations and invoices automatically.
+            After creating a client, you can optionally upload their logo from
+            the Clients List. Clients without a logo show their name prominently
+            on invoices.
           </p>
         </div>
 
@@ -121,7 +122,8 @@ export function AddClientForm() {
             </div>
           </div>
           <p className="mt-4 text-sm text-gray-500">
-            A default placeholder is used until you upload a custom logo.
+            Logo is optional. Invoices without a client logo display the client
+            name in place of the logo area.
           </p>
         </div>
       </aside>

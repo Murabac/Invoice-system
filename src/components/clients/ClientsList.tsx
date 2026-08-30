@@ -13,6 +13,7 @@ import {
   UserPlus,
   X,
 } from "lucide-react";
+import { hasClientLogo } from "@/lib/utils/client-logo";
 import { ClientLogoUpload } from "./ClientLogoUpload";
 import { deleteClient, updateClient } from "@/lib/actions/clients";
 import { Button } from "@/components/ui/Button";
@@ -132,6 +133,7 @@ export function ClientsList({ clients }: ClientsListProps) {
       <div className="grid gap-5 lg:grid-cols-2">
         {clients.map((client) => {
           const logoUrl = logoUrls[client.id] ?? client.logo_url;
+          const showLogo = hasClientLogo(logoUrl);
           const isEditing = editingId === client.id;
 
           return (
@@ -176,14 +178,18 @@ export function ClientsList({ clients }: ClientsListProps) {
                   <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-6 py-5">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex min-w-0 flex-1 items-center gap-4">
-                        <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                          <Image
-                            src={logoUrl || "/client.png"}
-                            alt={client.name}
-                            fill
-                            className="object-contain p-1.5"
-                            unoptimized={Boolean(logoUrl?.startsWith("http"))}
-                          />
+                        <div className="relative flex h-16 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                          {showLogo ? (
+                            <Image
+                              src={logoUrl!}
+                              alt={client.name}
+                              fill
+                              className="object-contain p-1.5"
+                              unoptimized={Boolean(logoUrl?.startsWith("http"))}
+                            />
+                          ) : (
+                            <Building2 className="h-7 w-7 text-gray-300" />
+                          )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <h3 className="truncate text-lg font-semibold leading-tight text-gray-900">
