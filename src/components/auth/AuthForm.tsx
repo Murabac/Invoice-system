@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "@/lib/actions/auth";
+import { quickSignInAsSuperAdmin, signIn } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
-export function AuthForm() {
+interface AuthFormProps {
+  showQuickSuperAdminLogin?: boolean;
+}
+
+export function AuthForm({ showQuickSuperAdminLogin = false }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -13,6 +17,16 @@ export function AuthForm() {
     setLoading(true);
     setError(null);
     const result = await signIn(formData);
+    if (result?.error) {
+      setError(result.error);
+      setLoading(false);
+    }
+  }
+
+  async function handleQuickSuperAdminSignIn() {
+    setLoading(true);
+    setError(null);
+    const result = await quickSignInAsSuperAdmin();
     if (result?.error) {
       setError(result.error);
       setLoading(false);
@@ -60,6 +74,30 @@ export function AuthForm() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Please wait…" : "Sign In"}
           </Button>
+
+          {showQuickSuperAdminLogin && (
+            <>
+              <div className="relative py-1">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-surface px-2 text-xs uppercase tracking-wide text-gray-400">
+                    Development
+                  </span>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={loading}
+                onClick={handleQuickSuperAdminSignIn}
+              >
+                {loading ? "Please wait…" : "Quick sign in (Super Admin)"}
+              </Button>
+            </>
+          )}
         </form>
       </div>
     </div>

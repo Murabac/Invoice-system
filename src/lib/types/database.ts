@@ -126,6 +126,7 @@ export interface Database {
           tax_rate: number;
           grand_total: number;
           has_stamp: boolean;
+          hide_client_name: boolean;
           notes: string | null;
           created_at: string;
           updated_at: string;
@@ -144,6 +145,7 @@ export interface Database {
           tax_rate?: number;
           grand_total?: number;
           has_stamp?: boolean;
+          hide_client_name?: boolean;
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -162,6 +164,7 @@ export interface Database {
           tax_rate?: number;
           grand_total?: number;
           has_stamp?: boolean;
+          hide_client_name?: boolean;
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -235,6 +238,7 @@ export interface DocumentFormState {
   client_id: string;
   tax_rate: number;
   has_stamp: boolean;
+  hide_client_name: boolean;
   notes: string;
   items: LineItemForm[];
 }

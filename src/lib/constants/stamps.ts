@@ -16,7 +16,7 @@ export const STAMP_PRESETS: Record<
   },
   m2b: {
     label: "M2B Technology",
-    description: "Navy and gold M2B Technology official stamp.",
+    description: "M2B Technology official stamp.",
     url: "/stamp-m2b.png",
   },
 };

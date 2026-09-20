@@ -7,6 +7,7 @@ import {
   ArrowRightLeft,
   Plus,
   Printer,
+  RotateCcw,
   Save,
   Trash2,
 } from "lucide-react";
@@ -31,6 +32,7 @@ import {
   parseTermsLines,
   termsToNotes,
 } from "@/lib/utils/terms";
+import { hasClientLogo } from "@/lib/utils/client-logo";
 import type {
   Client,
   DocumentFormState,
@@ -63,6 +65,7 @@ function buildInitialState(
       client_id: initial.client_id ?? "",
       tax_rate: Number(initial.tax_rate),
       has_stamp: initial.has_stamp,
+      hide_client_name: initial.hide_client_name ?? false,
       notes: initialDocumentNotes(initial.notes, defaultTerms),
       items:
         initial.document_items.length > 0
@@ -85,6 +88,7 @@ function buildInitialState(
     client_id: "",
     tax_rate: 0,
     has_stamp: false,
+    hide_client_name: false,
     notes: termsToNotes(defaultTerms),
     items: [createEmptyLineItem()],
   };
@@ -134,12 +138,24 @@ export function DocumentWorkspace({
     [profile, companyLogoUrl]
   );
 
+  const defaultTerms = useMemo(() => getDefaultTerms(profile), [profile]);
+
   const selectedClient = useMemo(() => {
     const client = clients.find((c) => c.id === form.client_id) ?? null;
     if (!client) return null;
     const logo_url = clientLogoUrls[client.id] ?? client.logo_url;
     return { ...client, logo_url };
   }, [clients, form.client_id, clientLogoUrls]);
+
+  useEffect(() => {
+    if (
+      form.hide_client_name &&
+      selectedClient &&
+      !hasClientLogo(selectedClient.logo_url)
+    ) {
+      setForm((prev) => ({ ...prev, hide_client_name: false }));
+    }
+  }, [form.hide_client_name, selectedClient]);
 
   const updateForm = useCallback(
     <K extends keyof DocumentFormState>(key: K, value: DocumentFormState[K]) => {
@@ -306,6 +322,20 @@ export function DocumentWorkspace({
             />
           )}
 
+          {selectedClient && hasClientLogo(selectedClient.logo_url) && (
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={form.hide_client_name}
+                onChange={(e) =>
+                  updateForm("hide_client_name", e.target.checked)
+                }
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              Hide client name on document (logo only)
+            </label>
+          )}
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Input
               label="Issue Date"
@@ -342,6 +372,37 @@ export function DocumentWorkspace({
             />
             Show official stamp overlay
           </label>
+
+          <div className="rounded-lg border border-gray-200 bg-surface-muted/30 p-4">
+            <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">
+                  Terms & Conditions
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Pre-filled from Settings. Edit, remove, or reset for this
+                  document only.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isPending}
+                onClick={() =>
+                  updateForm("notes", termsToNotes(defaultTerms))
+                }
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset to defaults
+              </Button>
+            </div>
+            <TermsEditor
+              terms={parseTermsLines(form.notes)}
+              onChange={(terms) => updateForm("notes", termsToNotes(terms))}
+              disabled={isPending}
+            />
+          </div>
 
           {/* Line items */}
           <div>
@@ -423,20 +484,6 @@ export function DocumentWorkspace({
             </div>
           </div>
 
-          <div>
-            <p className="mb-2 block text-sm font-medium text-gray-700">
-              Terms & Conditions
-            </p>
-            <p className="mb-3 text-xs text-gray-500">
-              Edit or remove terms for this document. Defaults come from Settings.
-            </p>
-            <TermsEditor
-              terms={parseTermsLines(form.notes)}
-              onChange={(terms) => updateForm("notes", termsToNotes(terms))}
-              disabled={isPending}
-            />
-          </div>
-
           {initialDocument?.type === "quotation" && (
             <Button
               variant="secondary"
@@ -469,6 +516,7 @@ export function DocumentWorkspace({
           items={form.items}
           taxRate={form.tax_rate}
           hasStamp={form.has_stamp}
+          hideClientName={form.hide_client_name}
           notes={form.notes}
         />
       </div>

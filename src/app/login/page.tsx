@@ -1,5 +1,8 @@
 import { AuthForm } from "@/components/auth/AuthForm";
+import { isQuickSuperAdminLoginAvailable } from "@/lib/actions/auth";
 
-export default function LoginPage() {
-  return <AuthForm />;
+export default async function LoginPage() {
+  const showQuickSuperAdminLogin = await isQuickSuperAdminLoginAvailable();
+
+  return <AuthForm showQuickSuperAdminLogin={showQuickSuperAdminLogin} />;
 }

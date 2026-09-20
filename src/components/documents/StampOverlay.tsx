@@ -14,7 +14,7 @@ export function StampOverlay({ className, src }: StampOverlayProps) {
       alt="Original Issued stamp"
       width={120}
       height={120}
-      className={className}
+      className={`object-contain ${className ?? ""}`}
     />
   );
 }

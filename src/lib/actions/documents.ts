@@ -170,6 +170,7 @@ export async function saveDocument(
     tax_rate: formState.tax_rate,
     grand_total: grandTotal,
     has_stamp: hasStamp,
+    hide_client_name: formState.hide_client_name,
     notes: formState.notes || null,
   };
 
@@ -248,6 +249,7 @@ export async function convertToInvoice(quotationId: string) {
       tax_rate: quotation.tax_rate,
       grand_total: quotation.grand_total,
       has_stamp: true,
+      hide_client_name: quotation.hide_client_name,
       notes: quotation.notes,
     })
     .select("id")

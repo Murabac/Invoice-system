@@ -4,9 +4,14 @@ export function getDefaultTerms(
   profile?: { default_terms?: string[] | null } | null
 ): string[] {
   if (Array.isArray(profile?.default_terms)) {
-    return profile.default_terms.map((term) => term.trim()).filter(Boolean);
+    const terms = profile.default_terms
+      .map((term) => term.trim())
+      .filter(Boolean);
+    if (terms.length > 0) {
+      return terms;
+    }
   }
-  return DEFAULT_TERMS;
+  return [...DEFAULT_TERMS];
 }
 
 export function termsToNotes(terms: string[]): string {
