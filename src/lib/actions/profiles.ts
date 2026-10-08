@@ -2,13 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { getAuthUser, getSupabase } from "@/lib/supabase/get-user";
-import {
-  COMPANY_PRESETS,
-  type CompanyPresetId,
-} from "@/lib/constants/companies";
+import { M2B_BRAND } from "@/lib/constants/companies";
 import { logoPresetToUrl, type LogoPreset } from "@/lib/constants/logos";
-import { DEFAULT_TERMS, COMPANY_INFO } from "@/lib/constants/company";
-import type { InvoiceHeaderTheme, InvoiceStampPreset, Profile } from "@/lib/types/database";
+import {
+  DEFAULT_TERMS,
+  COMPANY_INFO,
+  M2B_LOGO_URL,
+} from "@/lib/constants/company";
+import type { Profile } from "@/lib/types/database";
 
 const LOGOS_BUCKET = "logos";
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
@@ -103,12 +104,12 @@ async function ensureProfileUpdate(
       company_name:
         updates.company_name ??
         updates.dashboard_header_text ??
-        "Biloop Technology Innovators",
-      website_url: "https://biloop.com",
+        M2B_BRAND.headerText,
+      website_url: COMPANY_INFO.websiteUrl,
       dashboard_header_text:
-        updates.dashboard_header_text ?? "Biloop Technology Innovators",
-      invoice_header_theme: updates.invoice_header_theme ?? "blue",
-      invoice_stamp: updates.invoice_stamp ?? "biloop",
+        updates.dashboard_header_text ?? M2B_BRAND.headerText,
+      invoice_header_theme: updates.invoice_header_theme ?? "m2b",
+      invoice_stamp: updates.invoice_stamp ?? "m2b",
       default_terms: updates.default_terms ?? DEFAULT_TERMS,
       contact_name: updates.contact_name ?? COMPANY_INFO.contactName,
       contact_phone_1: updates.contact_phone_1 ?? COMPANY_INFO.contactPhone,
@@ -118,8 +119,8 @@ async function ensureProfileUpdate(
       business_address_line2:
         updates.business_address_line2 ?? COMPANY_INFO.addressLine2,
       business_phone: updates.business_phone ?? COMPANY_INFO.phone,
-      logo_url: updates.logo_url ?? "/logo.jpeg",
-      dashboard_logo_url: updates.dashboard_logo_url ?? "/logo.jpeg",
+      logo_url: updates.logo_url ?? M2B_LOGO_URL,
+      dashboard_logo_url: updates.dashboard_logo_url ?? M2B_LOGO_URL,
       role: "admin",
     });
     if (insertError) return { error: insertError.message };
@@ -141,38 +142,6 @@ export async function updateDashboardHeaderText(text: string) {
     dashboard_header_text,
     company_name: dashboard_header_text,
   });
-  if (result.error) return result;
-
-  revalidateLogoPaths();
-  return { success: true };
-}
-
-export async function updateInvoiceHeaderTheme(theme: InvoiceHeaderTheme) {
-  const user = await getAuthUser();
-  if (!user) return { error: "Unauthorized" };
-
-  if (theme !== "blue" && theme !== "gradient" && theme !== "h24" && theme !== "m2b") {
-    return { error: "Invalid theme" };
-  }
-
-  const result = await ensureProfileUpdate(user.id, {
-    invoice_header_theme: theme as InvoiceHeaderTheme,
-  });
-  if (result.error) return result;
-
-  revalidateLogoPaths();
-  return { success: true };
-}
-
-export async function updateInvoiceStampPreset(preset: InvoiceStampPreset) {
-  const user = await getAuthUser();
-  if (!user) return { error: "Unauthorized" };
-
-  if (preset !== "biloop" && preset !== "h24" && preset !== "m2b") {
-    return { error: "Invalid stamp" };
-  }
-
-  const result = await ensureProfileUpdate(user.id, { invoice_stamp: preset });
   if (result.error) return result;
 
   revalidateLogoPaths();
@@ -228,27 +197,24 @@ export async function updateInvoiceContact(data: {
   return { success: true };
 }
 
-export async function applyCompanyPreset(presetId: CompanyPresetId) {
+export async function applyM2bBrandDefaults() {
   const user = await getAuthUser();
   if (!user) return { error: "Unauthorized" };
 
-  const preset = COMPANY_PRESETS[presetId];
-  if (!preset) return { error: "Invalid company preset" };
-
   const result = await ensureProfileUpdate(user.id, {
-    dashboard_header_text: preset.headerText,
-    company_name: preset.headerText,
-    business_address_line1: preset.addressLine1,
-    business_address_line2: preset.addressLine2,
-    business_phone: preset.businessPhone,
-    contact_name: preset.contactName,
-    contact_phone_1: preset.contactPhone1,
-    contact_phone_2: preset.contactPhone2,
-    invoice_header_theme: preset.invoiceHeaderTheme,
-    invoice_stamp: preset.stampPreset,
-    default_terms: preset.defaultTerms,
-    logo_url: logoPresetToUrl(preset.logoPreset),
-    dashboard_logo_url: logoPresetToUrl(preset.logoPreset),
+    dashboard_header_text: M2B_BRAND.headerText,
+    company_name: M2B_BRAND.headerText,
+    business_address_line1: M2B_BRAND.addressLine1,
+    business_address_line2: M2B_BRAND.addressLine2,
+    business_phone: M2B_BRAND.businessPhone,
+    contact_name: M2B_BRAND.contactName,
+    contact_phone_1: M2B_BRAND.contactPhone1,
+    contact_phone_2: M2B_BRAND.contactPhone2,
+    invoice_header_theme: M2B_BRAND.invoiceHeaderTheme,
+    invoice_stamp: M2B_BRAND.stampPreset,
+    default_terms: M2B_BRAND.defaultTerms,
+    logo_url: M2B_BRAND.logoUrl,
+    dashboard_logo_url: M2B_BRAND.logoUrl,
   });
   if (result.error) return result;
 

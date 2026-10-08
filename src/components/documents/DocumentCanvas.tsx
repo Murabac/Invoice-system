@@ -64,7 +64,7 @@ export function DocumentCanvas({
   const showStamp =
     hasStamp || (type === "invoice" && status === "issued") || status === "paid";
 
-  const companyLogo = profile?.logo_url || "/logo.jpeg";
+  const companyLogo = profile?.logo_url || "/logo-m2b.png";
   const showClientLogo = hasClientLogo(client?.logo_url);
   const hideNameOnDocument =
     hideClientName && showClientLogo && Boolean(client?.logo_url);
@@ -74,7 +74,7 @@ export function DocumentCanvas({
   const docLabel = type === "quotation" ? "Quotation" : "Invoice";
   const terms = resolveDocumentTerms(notes, getDefaultTerms(profile));
   const lineItems = items.filter((i) => i.product_name.trim());
-  const headerTheme = profile?.invoice_header_theme ?? "blue";
+  const headerTheme = "m2b";
   const stampUrl = getStampUrl(profile?.invoice_stamp);
   const contact = getInvoiceContact(profile);
   const contactPhones = formatContactPhones(contact);

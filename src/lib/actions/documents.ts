@@ -1,14 +1,15 @@
 "use server";
 
-import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAuthUser, getSupabase } from "@/lib/supabase/get-user";
 import {
   calculateDocumentTotals,
   calculateLineTotal,
-  padDocumentNumber,
+  formatDocumentNumber,
+  parseDocumentNumberSequence,
 } from "@/lib/utils/format";
+import { syncInvoicePaidIncome } from "@/lib/actions/cashbook";
 import type {
   DocumentFormState,
   DocumentStatus,
@@ -19,34 +20,39 @@ import type {
   Client,
 } from "@/lib/types/database";
 
-function buildRandomDocumentNumber(type: DocumentType): string {
-  const prefix = type === "quotation" ? "Q" : "I";
-  const num = randomInt(1, 10000);
-  return `${prefix}${padDocumentNumber(num)}`;
-}
-
 export async function getNextDocumentNumber(
   type: DocumentType
 ): Promise<string> {
   const supabase = await getSupabase();
   const user = await getAuthUser();
 
-  if (!user) return buildRandomDocumentNumber(type);
+  if (!user) return formatDocumentNumber(type, 1);
 
-  for (let attempt = 0; attempt < 25; attempt++) {
-    const candidate = buildRandomDocumentNumber(type);
-    const { data } = await supabase
+  const { data: rows } = await supabase
+    .from("documents")
+    .select("document_number")
+    .eq("user_id", user.id)
+    .eq("type", type);
+
+  let maxSeq = 0;
+  for (const row of rows ?? []) {
+    const seq = parseDocumentNumberSequence(type, row.document_number);
+    if (seq !== null && seq > maxSeq) maxSeq = seq;
+  }
+
+  for (let bump = 1; bump <= 25; bump++) {
+    const candidate = formatDocumentNumber(type, maxSeq + bump);
+    const { data: existing } = await supabase
       .from("documents")
       .select("id")
       .eq("user_id", user.id)
       .eq("document_number", candidate)
       .maybeSingle();
 
-    if (!data) return candidate;
+    if (!existing) return candidate;
   }
 
-  const prefix = type === "quotation" ? "Q" : "I";
-  return `${prefix}#${String(Date.now()).slice(-6)}`;
+  return formatDocumentNumber(type, maxSeq + 1);
 }
 
 export async function getDocuments(filters?: {
@@ -216,8 +222,17 @@ export async function saveDocument(
     if (itemsError) return { error: itemsError.message };
   }
 
+  if (
+    formState.type === "invoice" &&
+    formState.status === "paid" &&
+    savedDocId
+  ) {
+    await syncInvoicePaidIncome(savedDocId);
+  }
+
   revalidatePath("/documents");
   revalidatePath("/dashboard");
+  revalidatePath("/treasury");
   return { success: true, id: savedDocId };
 }
 
@@ -321,8 +336,13 @@ export async function updateDocumentStatus(
 
   if (error) return { error: error.message };
 
+  if (status === "paid") {
+    await syncInvoicePaidIncome(id);
+  }
+
   revalidatePath("/documents");
   revalidatePath("/dashboard");
+  revalidatePath("/treasury");
   revalidatePath(`/documents/${id}`);
   return { success: true };
 }

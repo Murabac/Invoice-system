@@ -4,12 +4,17 @@
 
 @layer base {
   :root,
-  [data-brand-theme="blue"] {
-    --color-primary-rgb: 0 166 255;
-    --color-primary-dark-rgb: 0 136 212;
-    --color-primary-light-rgb: 51 184 255;
-    --brand-header-bg: #25abe3;
-    --brand-header-border: #1e96c7;
+  [data-brand-theme="m2b"] {
+    --color-primary-rgb: 30 58 95;
+    --color-primary-dark-rgb: 22 44 74;
+    --color-primary-light-rgb: 42 80 130;
+    --brand-header-bg: linear-gradient(
+      135deg,
+      #1e3a5f 0%,
+      #2a5082 55%,
+      #d4af37 100%
+    );
+    --brand-header-border: #1e3a5f;
   }
 
   [data-brand-theme="gradient"] {
@@ -161,7 +166,9 @@
     }
 
     #invoice-print-root,
-    #invoice-print-root * {
+    #treasury-print-root,
+    #invoice-print-root *,
+    #treasury-print-root * {
       visibility: visible;
     }
 
@@ -172,6 +179,14 @@
       width: 100%;
       min-height: 277mm;
       height: 277mm;
+    }
+
+    #treasury-print-root {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      min-height: auto;
     }
 
     body {

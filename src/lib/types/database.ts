@@ -8,9 +8,11 @@ export type Json =
 
 export type DocumentType = "quotation" | "invoice";
 export type DocumentStatus = "draft" | "issued" | "paid";
-export type InvoiceHeaderTheme = "blue" | "gradient" | "h24" | "m2b";
-export type InvoiceStampPreset = "biloop" | "h24" | "m2b";
-export type UserRole = "super_admin" | "admin";
+export type InvoiceHeaderTheme = "m2b";
+export type InvoiceStampPreset = "m2b";
+export type UserRole = "super_admin" | "admin" | "pending";
+export type CashbookEntryType = "income" | "expense";
+export type CashbookSource = "manual" | "invoice";
 
 export interface Database {
   invoice: {
@@ -204,6 +206,48 @@ export interface Database {
         };
         Relationships: [];
       };
+      cashbook_entries: {
+        Row: {
+          id: string;
+          user_id: string;
+          entry_type: CashbookEntryType;
+          amount: number;
+          entry_date: string;
+          description: string;
+          category: string | null;
+          source: CashbookSource;
+          invoice_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          entry_type: CashbookEntryType;
+          amount: number;
+          entry_date?: string;
+          description: string;
+          category?: string | null;
+          source?: CashbookSource;
+          invoice_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          entry_type?: CashbookEntryType;
+          amount?: number;
+          entry_date?: string;
+          description?: string;
+          category?: string | null;
+          source?: CashbookSource;
+          invoice_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -216,6 +260,8 @@ export type Profile = Database["invoice"]["Tables"]["profiles"]["Row"];
 export type Client = Database["invoice"]["Tables"]["clients"]["Row"];
 export type Document = Database["invoice"]["Tables"]["documents"]["Row"];
 export type DocumentItem = Database["invoice"]["Tables"]["document_items"]["Row"];
+export type CashbookEntry =
+  Database["invoice"]["Tables"]["cashbook_entries"]["Row"];
 
 export type DocumentWithRelations = Document & {
   clients: Client | null;

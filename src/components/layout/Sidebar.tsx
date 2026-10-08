@@ -10,6 +10,7 @@ import {
   UserCog,
   UserPlus,
   Users,
+  Wallet,
   X,
 } from "lucide-react";
 import { signOut } from "@/lib/actions/auth";
@@ -22,6 +23,7 @@ import { NavLink } from "./NavLink";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/treasury", label: "Treasury", icon: Wallet },
   {
     href: "/documents",
     label: "Documents",

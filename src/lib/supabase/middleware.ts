@@ -14,6 +14,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   const isAuthRoute = pathname.startsWith("/login");
+  const isAccountPending = pathname.startsWith("/account-pending");
 
   if (pathname.startsWith("/signup")) {
     const url = request.nextUrl.clone();
@@ -23,7 +24,7 @@ export async function updateSession(request: NextRequest) {
 
   // Fast path: no session cookie → redirect without a network call
   if (!hasAuthCookie(request)) {
-    if (!isAuthRoute && pathname !== "/") {
+    if (!isAuthRoute && !isAccountPending && pathname !== "/") {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       return NextResponse.redirect(url);
@@ -59,7 +60,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getSession();
   const user = session?.user ?? null;
 
-  if (!user && !isAuthRoute && pathname !== "/") {
+  if (!user && !isAuthRoute && !isAccountPending && pathname !== "/") {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

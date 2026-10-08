@@ -1,30 +1,20 @@
+import { M2B_STAMP_URL } from "@/lib/constants/company";
 import type { InvoiceStampPreset } from "@/lib/types/database";
 
 export const STAMP_PRESETS: Record<
   InvoiceStampPreset,
   { label: string; description: string; url: string }
 > = {
-  biloop: {
-    label: "Biloop",
-    description: "Blue circular Biloop official stamp.",
-    url: "/stamp.png",
-  },
-  h24: {
-    label: "H24 Technology",
-    description: "Sky-blue H24 Technology official stamp.",
-    url: "/stamp-h24.png",
-  },
   m2b: {
     label: "M2B Technology",
     description: "M2B Technology official stamp.",
-    url: "/stamp-m2b.png",
+    url: M2B_STAMP_URL,
   },
 };
 
-export const STAMP_PRESET_ORDER: InvoiceStampPreset[] = ["biloop", "h24", "m2b"];
-
 export function getStampUrl(
-  preset: InvoiceStampPreset | null | undefined
+  preset: InvoiceStampPreset | string | null | undefined
 ): string {
-  return STAMP_PRESETS[preset ?? "biloop"].url;
+  if (preset === "m2b") return STAMP_PRESETS.m2b.url;
+  return STAMP_PRESETS.m2b.url;
 }

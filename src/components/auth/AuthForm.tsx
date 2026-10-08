@@ -37,8 +37,10 @@ export function AuthForm({ showQuickSuperAdminLogin = false }: AuthFormProps) {
     <div className="flex min-h-screen items-center justify-center bg-surface-muted px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-primary">Biloop</h1>
-          <p className="mt-1 text-sm text-gray-500">Technology Innovators</p>
+          <h1 className="text-3xl font-bold text-primary">M2B Technology</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Technology | Innovation | Solutions
+          </p>
           <p className="mt-4 text-lg font-semibold text-gray-900">
             Sign in to your account
           </p>

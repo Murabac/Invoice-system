@@ -9,8 +9,8 @@ const dancingScript = Dancing_Script({
 });
 
 export const metadata: Metadata = {
-  title: "Biloop Invoice System",
-  description: "Professional invoice and quotation management by Biloop Technology Innovators",
+  title: "M2B Invoice System",
+  description: "Professional invoice and quotation management for M2B Technology",
 };
 
 export const viewport: Viewport = {

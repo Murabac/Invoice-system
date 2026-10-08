@@ -1,14 +1,24 @@
 import Link from "next/link";
-import { DollarSign, FileClock, FileCheck, Receipt } from "lucide-react";
+import { DollarSign, FileClock, FileCheck, Receipt, Wallet } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/Button";
+import { getCashbookSummary } from "@/lib/actions/cashbook";
 import { getDashboardMetrics } from "@/lib/actions/documents";
 import { formatCurrency } from "@/lib/utils/format";
 
 export default async function DashboardPage() {
-  const metrics = await getDashboardMetrics();
+  const [metrics, cashbook] = await Promise.all([
+    getDashboardMetrics(),
+    getCashbookSummary(),
+  ]);
 
   const cards = [
+    {
+      label: "Cash Balance",
+      value: formatCurrency(cashbook.balance),
+      icon: Wallet,
+      color: "text-primary bg-primary/10",
+    },
     {
       label: "Total Invoiced",
       value: formatCurrency(metrics.totalInvoiced),
@@ -47,7 +57,7 @@ export default async function DashboardPage() {
         }
       />
       <div className="page-content">
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
           {cards.map(({ label, value, icon: Icon, color }) => (
             <div
               key={label}

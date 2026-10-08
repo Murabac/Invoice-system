@@ -1,0 +1,289 @@
+.treasury-report {
+  --treasury-navy: #1e3a5f;
+  --treasury-gold: #d4af37;
+  --treasury-navy-light: #2a5082;
+  max-width: 210mm;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.08),
+    0 12px 24px -4px rgb(30 58 95 / 0.12);
+  border: 1px solid rgb(30 58 95 / 0.12);
+}
+
+.treasury-report__header {
+  background: linear-gradient(
+    135deg,
+    var(--treasury-navy) 0%,
+    var(--treasury-navy-light) 55%,
+    var(--treasury-gold) 100%
+  );
+  color: #fff;
+  padding: 1.75rem 2rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.treasury-report__brand {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.treasury-report__logo-wrap {
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+}
+
+.treasury-report__logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.treasury-report__company-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.treasury-report__company-meta {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  opacity: 0.92;
+}
+
+.treasury-report__title-block {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.treasury-report__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.treasury-report__subtitle {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.treasury-report__body {
+  padding: 1.75rem 2rem 2rem;
+}
+
+.treasury-report__summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .treasury-report__summary {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .treasury-report__summary {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.treasury-report__stat {
+  border-radius: 0.75rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgb(30 58 95 / 0.1);
+  background: linear-gradient(
+    180deg,
+    rgb(30 58 95 / 0.04) 0%,
+    rgb(255 255 255) 100%
+  );
+}
+
+.treasury-report__stat--highlight {
+  border-color: rgb(212 175 55 / 0.45);
+  background: linear-gradient(
+    135deg,
+    rgb(30 58 95 / 0.08) 0%,
+    rgb(212 175 55 / 0.12) 100%
+  );
+  grid-column: span 2;
+}
+
+@media (min-width: 640px) {
+  .treasury-report__stat--highlight {
+    grid-column: span 1;
+  }
+}
+
+.treasury-report__stat-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.treasury-report__stat-value {
+  margin-top: 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--treasury-navy);
+  line-height: 1.2;
+}
+
+.treasury-report__stat-value--income {
+  color: #15803d;
+}
+
+.treasury-report__stat-value--expense {
+  color: #b91c1c;
+}
+
+.treasury-report__section-title {
+  margin: 1.75rem 0 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--treasury-navy);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--treasury-gold);
+}
+
+.treasury-report__table-wrap {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgb(30 58 95 / 0.12);
+}
+
+.treasury-report__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.treasury-report__table thead {
+  background: var(--treasury-navy);
+  color: #fff;
+}
+
+.treasury-report__table th {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.treasury-report__table th.num {
+  text-align: right;
+}
+
+.treasury-report__table td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid rgb(226 232 240);
+  vertical-align: top;
+}
+
+.treasury-report__table tbody tr:nth-child(even) {
+  background: rgb(248 250 252);
+}
+
+.treasury-report__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.treasury-report__table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.treasury-report__type-pill {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+}
+
+.treasury-report__type-pill--income {
+  background: rgb(220 252 231);
+  color: #166534;
+}
+
+.treasury-report__type-pill--expense {
+  background: rgb(254 226 226);
+  color: #991b1b;
+}
+
+.treasury-report__footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(226 232 240);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.treasury-report__tagline {
+  font-weight: 600;
+  color: var(--treasury-navy);
+}
+
+.treasury-report__empty {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+@media print {
+  #treasury-print-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    min-height: auto;
+    padding: 0;
+    margin: 0;
+  }
+
+  .treasury-report {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .treasury-report__table tbody tr {
+    break-inside: avoid;
+  }
+}

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:fresh": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kill-port-3000.ps1 && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

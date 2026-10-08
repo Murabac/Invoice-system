@@ -84,7 +84,7 @@ export function CreateUserForm() {
           <Input
             label="Company Name"
             name="company_name"
-            placeholder="Biloop Technology Innovators"
+            placeholder="M2B Technology"
           />
         </div>
       </div>

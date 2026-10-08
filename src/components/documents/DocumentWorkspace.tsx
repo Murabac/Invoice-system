@@ -20,12 +20,15 @@ import { Select } from "@/components/ui/Select";
 import {
   saveDocument,
   convertToInvoice,
+  getNextDocumentNumber,
 } from "@/lib/actions/documents";
 import {
   addDaysISO,
   createEmptyLineItem,
   todayISO,
 } from "@/lib/utils/format";
+import { getCompanyDisplayName } from "@/lib/constants/company";
+import { printDatePrefix, printWithDocumentTitle } from "@/lib/utils/print";
 import {
   getDefaultTerms,
   initialDocumentNotes,
@@ -123,11 +126,11 @@ export function DocumentWorkspace({
       )
   );
   const [companyLogoUrl, setCompanyLogoUrl] = useState(
-    profile?.logo_url ?? "/logo.jpeg"
+    profile?.logo_url ?? "/logo-m2b.png"
   );
 
   useEffect(() => {
-    setCompanyLogoUrl(profile?.logo_url ?? "/logo.jpeg");
+    setCompanyLogoUrl(profile?.logo_url ?? "/logo-m2b.png");
   }, [profile?.logo_url]);
 
   const previewProfile = useMemo(
@@ -224,7 +227,14 @@ export function DocumentWorkspace({
     });
   };
 
-  const handlePrint = () => window.print();
+  const handlePrint = () => {
+    const company = getCompanyDisplayName(profile);
+    const date = printDatePrefix(form.issue_date);
+    const kind = form.type === "invoice" ? "Invoice" : "Quotation";
+    printWithDocumentTitle(
+      `${date} ${company} ${kind} ${form.document_number}`
+    );
+  };
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
@@ -262,9 +272,22 @@ export function DocumentWorkspace({
             <Select
               label="Document Type"
               value={form.type}
-              onChange={(e) =>
-                updateForm("type", e.target.value as DocumentType)
-              }
+              onChange={(e) => {
+                const nextType = e.target.value as DocumentType;
+                if (nextType === form.type) return;
+                if (!initialDocument) {
+                  startTransition(async () => {
+                    const nextNumber = await getNextDocumentNumber(nextType);
+                    setForm((prev) => ({
+                      ...prev,
+                      type: nextType,
+                      document_number: nextNumber,
+                    }));
+                  });
+                  return;
+                }
+                updateForm("type", nextType);
+              }}
               options={[
                 { value: "quotation", label: "Quotation" },
                 { value: "invoice", label: "Invoice" },

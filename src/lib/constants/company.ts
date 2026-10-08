@@ -1,12 +1,16 @@
 export const COMPANY_INFO = {
-  name: "Biloop Technology Innovation",
-  addressLine1: "Hargaisa. Somaliland",
+  name: "M2B Technology",
+  addressLine1: "Hargaisa, Somaliland",
   addressLine2: "Ibrahim Koodbur, Badacas",
   phone: "(252) 63-4412241",
   contactName: "Mohamed",
   contactPhone: "4412241",
   contactPhone2: "",
+  websiteUrl: "https://m2btek.com",
 };
+
+export const M2B_LOGO_URL = "/logo-m2b.png";
+export const M2B_STAMP_URL = "/stamp-m2b.png";
 
 export interface InvoiceContact {
   contactName: string;
@@ -62,7 +66,7 @@ export function formatContactPhones(contact: InvoiceContact): string {
   return phones.join(" / ");
 }
 
-export const DEFAULT_COMPANY_NAME = "Biloop Technology Innovators";
+export const DEFAULT_COMPANY_NAME = "M2B Technology";
 
 export function getCompanyDisplayName(
   profile?:
@@ -82,5 +86,5 @@ export function getCompanyDisplayName(
 export const DEFAULT_TERMS = [
   "Customer will be billed 30% after indicating acceptance of this quote.",
   "Payment will be due prior to delivery of service and goods.",
-  "The initial phase of the Project is scheduled to conclude within a duration of 21 days.",
+  "Connecting today, building tomorrow.",
 ];

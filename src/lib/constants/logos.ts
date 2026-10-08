@@ -1,48 +1,20 @@
-export type LogoPreset = "biloop" | "alternate" | "h24" | "m2b";
+import { M2B_LOGO_URL } from "@/lib/constants/company";
+
+export type LogoPreset = "m2b";
 export type LogoSelection = LogoPreset | "custom";
 
-export const LOGO_PRESETS: Record<
-  LogoPreset,
-  { label: string; description: string; url: string; previewClass?: string }
-> = {
-  biloop: {
-    label: "Biloop",
-    description: "Primary Biloop logo (JPEG).",
-    url: "/logo.jpeg",
-  },
-  alternate: {
-    label: "Biloop Alternate",
-    description: "Secondary Biloop logo variant (PNG).",
-    url: "/logo.png",
-  },
-  h24: {
-    label: "H24 Technology",
-    description: "H24 Technology logo.",
-    url: "/logo-h24.png",
-    previewClass: "bg-black",
-  },
-  m2b: {
-    label: "M2B Technology",
-    description: "M2B Technology logo.",
-    url: "/logo-m2b.png",
-  },
-};
+export const DEFAULT_LOGO_URL = M2B_LOGO_URL;
 
 export function logoUrlToSelection(
   url: string | null | undefined
 ): LogoSelection {
-  if (!url) return "biloop";
-
+  if (!url) return "m2b";
   const base = url.split("?")[0];
-  for (const preset of Object.keys(LOGO_PRESETS) as LogoPreset[]) {
-    if (base.endsWith(LOGO_PRESETS[preset].url)) {
-      return preset;
-    }
-  }
-
+  if (base.endsWith(M2B_LOGO_URL)) return "m2b";
   return "custom";
 }
 
-export function logoPresetToUrl(preset: LogoPreset): string {
-  return LOGO_PRESETS[preset].url;
+export function logoPresetToUrl(preset: LogoPreset = "m2b"): string {
+  void preset;
+  return M2B_LOGO_URL;
 }

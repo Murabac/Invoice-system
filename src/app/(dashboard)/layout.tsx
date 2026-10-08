@@ -1,8 +1,9 @@
+import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { getAuthUser } from "@/lib/supabase/get-user";
 import { getProfile } from "@/lib/actions/profiles";
+import { canAccessDashboard } from "@/lib/auth/roles";
 import { getCompanyDisplayName } from "@/lib/constants/company";
-import type { InvoiceHeaderTheme } from "@/lib/types/database";
 
 export default async function DashboardLayout({
   children,
@@ -11,8 +12,10 @@ export default async function DashboardLayout({
 }) {
   await getAuthUser();
   const profile = await getProfile();
-  const brandTheme =
-    (profile?.invoice_header_theme as InvoiceHeaderTheme | undefined) ?? "blue";
+  if (profile && !canAccessDashboard(profile.role)) {
+    redirect("/account-pending");
+  }
+  const brandTheme = profile?.invoice_header_theme ?? "m2b";
 
   return (
     <DashboardShell

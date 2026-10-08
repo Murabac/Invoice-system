@@ -17,7 +17,7 @@ export function AppShell({
   children,
   dashboardLogoUrl,
   dashboardHeaderText,
-  brandTheme = "blue",
+  brandTheme = "m2b",
   userRole,
 }: AppShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -52,7 +52,7 @@ export function AppShell({
             <Menu className="h-5 w-5" />
           </button>
           <p className="truncate text-sm font-semibold text-gray-900">
-            {dashboardHeaderText?.trim() || "Biloop Technology Innovators"}
+            {dashboardHeaderText?.trim() || "M2B Technology"}
           </p>
         </div>
 

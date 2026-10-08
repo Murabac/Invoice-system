@@ -10,7 +10,7 @@ export type UserListItem = {
   id: string;
   email: string | null;
   company_name: string | null;
-  role: "super_admin" | "admin";
+  role: "super_admin" | "admin" | "pending";
   created_at: string;
 };
 
@@ -45,7 +45,7 @@ export async function createAdminUser(data: {
 
   const email = data.email.trim().toLowerCase();
   const password = data.password;
-  const company_name = data.company_name?.trim() || "Biloop Technology Innovators";
+  const company_name = data.company_name?.trim() || "M2B Technology";
 
   if (!email) return { error: "Email is required" };
   if (password.length < 6) {

@@ -79,3 +79,29 @@ export function createEmptyLineItem(): LineItemForm {
 export function padDocumentNumber(num: number): string {
   return `#${String(num).padStart(4, "0")}`;
 }
+
+export function documentNumberPrefix(type: "quotation" | "invoice"): string {
+  return type === "quotation" ? "Q" : "I";
+}
+
+/** Parse numeric sequence from Q#0001 / I#0042 (and legacy Q0001). */
+export function parseDocumentNumberSequence(
+  type: "quotation" | "invoice",
+  documentNumber: string
+): number | null {
+  const prefix = documentNumberPrefix(type);
+  const trimmed = documentNumber.trim();
+  const match = trimmed.match(
+    new RegExp(`^${prefix}#?(\\d+)$`, "i")
+  );
+  if (!match) return null;
+  const n = parseInt(match[1], 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+export function formatDocumentNumber(
+  type: "quotation" | "invoice",
+  sequence: number
+): string {
+  return `${documentNumberPrefix(type)}${padDocumentNumber(sequence)}`;
+}
