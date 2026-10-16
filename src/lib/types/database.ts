@@ -248,6 +248,69 @@ export interface Database {
         };
         Relationships: [];
       };
+      library_folders: {
+        Row: {
+          id: string;
+          name: string;
+          parent_id: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          parent_id?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          parent_id?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      library_files: {
+        Row: {
+          id: string;
+          folder_id: string | null;
+          title: string;
+          original_filename: string;
+          storage_path: string;
+          mime_type: string;
+          file_size_bytes: number;
+          uploaded_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          folder_id?: string | null;
+          title: string;
+          original_filename: string;
+          storage_path: string;
+          mime_type: string;
+          file_size_bytes: number;
+          uploaded_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          folder_id?: string | null;
+          title?: string;
+          original_filename?: string;
+          storage_path?: string;
+          mime_type?: string;
+          file_size_bytes?: number;
+          uploaded_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -262,6 +325,10 @@ export type Document = Database["invoice"]["Tables"]["documents"]["Row"];
 export type DocumentItem = Database["invoice"]["Tables"]["document_items"]["Row"];
 export type CashbookEntry =
   Database["invoice"]["Tables"]["cashbook_entries"]["Row"];
+export type LibraryFolder =
+  Database["invoice"]["Tables"]["library_folders"]["Row"];
+export type LibraryFile =
+  Database["invoice"]["Tables"]["library_files"]["Row"];
 
 export type DocumentWithRelations = Document & {
   clients: Client | null;

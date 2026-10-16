@@ -40,7 +40,7 @@ export default function DocumentsPage({ searchParams }: DocumentsPageProps) {
   return (
     <>
       <Header
-        title="Documents"
+        title="Invoices"
         description="Manage quotations and invoices"
         actions={
           <Link href="/documents/new">

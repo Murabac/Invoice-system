@@ -2,6 +2,7 @@
 
 import {
   FileText,
+  FolderOpen,
   LayoutDashboard,
   List,
   LogOut,
@@ -24,9 +25,10 @@ import { NavLink } from "./NavLink";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/treasury", label: "Treasury", icon: Wallet },
+  { href: "/library", label: "File library", icon: FolderOpen },
   {
     href: "/documents",
-    label: "Documents",
+    label: "Invoices",
     icon: FileText,
     matchPrefix: true,
     excludePaths: ["/documents/new"],
