@@ -10,6 +10,7 @@ import {
   parseDocumentNumberSequence,
 } from "@/lib/utils/format";
 import { syncInvoicePaidIncome } from "@/lib/actions/cashbook";
+import { syncInvoicePdfToLibrary } from "@/lib/actions/invoice-library";
 import type {
   DocumentFormState,
   DocumentStatus,
@@ -230,6 +231,10 @@ export async function saveDocument(
     await syncInvoicePaidIncome(savedDocId);
   }
 
+  if (formState.type === "invoice" && savedDocId) {
+    await syncInvoicePdfToLibrary(savedDocId);
+  }
+
   revalidatePath("/documents");
   revalidatePath("/dashboard");
   revalidatePath("/treasury");
@@ -285,12 +290,15 @@ export async function convertToInvoice(quotationId: string) {
     await supabase.from("document_items").insert(items);
   }
 
+  await syncInvoicePdfToLibrary(invoice.id);
+
   await supabase
     .from("documents")
     .update({ status: "issued" })
     .eq("id", quotationId);
 
   revalidatePath("/documents");
+  revalidatePath("/library");
   revalidatePath("/dashboard");
   redirect(`/documents/${invoice.id}`);
 }

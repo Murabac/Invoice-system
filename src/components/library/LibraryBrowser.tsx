@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useState, useTransition } from "react";
 import {
@@ -451,6 +452,14 @@ export function LibraryBrowser({
                   <p className="mt-0.5 truncate text-xs text-gray-400">
                     {file.uploader_email}
                   </p>
+                )}
+                {file.document_id && (
+                  <Link
+                    href={`/documents/${file.document_id}`}
+                    className="mt-1 text-xs font-medium text-primary hover:underline"
+                  >
+                    View source invoice
+                  </Link>
                 )}
                 <div className="mt-3 flex flex-wrap gap-2">
                   <select

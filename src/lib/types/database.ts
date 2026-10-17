@@ -282,6 +282,7 @@ export interface Database {
           mime_type: string;
           file_size_bytes: number;
           uploaded_by: string;
+          document_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -294,6 +295,7 @@ export interface Database {
           mime_type: string;
           file_size_bytes: number;
           uploaded_by: string;
+          document_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -306,6 +308,7 @@ export interface Database {
           mime_type?: string;
           file_size_bytes?: number;
           uploaded_by?: string;
+          document_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };

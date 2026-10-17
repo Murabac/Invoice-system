@@ -42,3 +42,8 @@ export function sanitizeStorageFilename(name: string): string {
   const base = name.replace(/[\\/:*?"<>|]/g, "-").trim();
   return base.slice(0, 180) || "file";
 }
+
+export function firstLineOfText(text: string): string {
+  const line = text.trim().split(/\r?\n/)[0]?.trim();
+  return line ?? "";
+}

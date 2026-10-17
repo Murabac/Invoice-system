@@ -22,7 +22,7 @@ export type LibraryFileWithMeta = LibraryFile & {
   uploader_email: string | null;
 };
 
-async function requireLibraryAccess() {
+export async function requireLibraryAccess() {
   const user = await getAuthUser();
   const profile = await getProfile();
   if (!user || !profile || !canAccessDashboard(profile.role)) {
