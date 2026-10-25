@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CalendarClock,
   FileText,
   FolderOpen,
   LayoutDashboard,
@@ -26,6 +27,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/treasury", label: "Treasury", icon: Wallet },
   { href: "/library", label: "File library", icon: FolderOpen },
+  { href: "/subscriptions", label: "Subscriptions", icon: CalendarClock },
   {
     href: "/documents",
     label: "Invoices",

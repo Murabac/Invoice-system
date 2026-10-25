@@ -13,6 +13,14 @@ export type InvoiceStampPreset = "m2b";
 export type UserRole = "super_admin" | "admin" | "pending";
 export type CashbookEntryType = "income" | "expense";
 export type CashbookSource = "manual" | "invoice";
+export type SubscriptionKind =
+  | "domain"
+  | "saas"
+  | "hosting"
+  | "ssl"
+  | "license"
+  | "other";
+export type BillingCycle = "monthly" | "yearly" | "one_time" | "other";
 
 export interface Database {
   invoice: {
@@ -314,6 +322,57 @@ export interface Database {
         };
         Relationships: [];
       };
+      subscriptions: {
+        Row: {
+          id: string;
+          name: string;
+          kind: SubscriptionKind;
+          vendor: string | null;
+          expiry_date: string;
+          billing_cycle: BillingCycle | null;
+          renewal_amount: number | null;
+          currency: string;
+          auto_renew: boolean;
+          website_url: string | null;
+          notes: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          kind: SubscriptionKind;
+          vendor?: string | null;
+          expiry_date: string;
+          billing_cycle?: BillingCycle | null;
+          renewal_amount?: number | null;
+          currency?: string;
+          auto_renew?: boolean;
+          website_url?: string | null;
+          notes?: string | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          kind?: SubscriptionKind;
+          vendor?: string | null;
+          expiry_date?: string;
+          billing_cycle?: BillingCycle | null;
+          renewal_amount?: number | null;
+          currency?: string;
+          auto_renew?: boolean;
+          website_url?: string | null;
+          notes?: string | null;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -332,6 +391,8 @@ export type LibraryFolder =
   Database["invoice"]["Tables"]["library_folders"]["Row"];
 export type LibraryFile =
   Database["invoice"]["Tables"]["library_files"]["Row"];
+export type Subscription =
+  Database["invoice"]["Tables"]["subscriptions"]["Row"];
 
 export type DocumentWithRelations = Document & {
   clients: Client | null;

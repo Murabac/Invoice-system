@@ -1,15 +1,37 @@
 import Link from "next/link";
-import { DollarSign, FileClock, FileCheck, Receipt, Wallet } from "lucide-react";
+import {
+  CalendarClock,
+  DollarSign,
+  FileClock,
+  FileCheck,
+  Receipt,
+  Wallet,
+} from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/Button";
 import { getCashbookSummary } from "@/lib/actions/cashbook";
 import { getDashboardMetrics } from "@/lib/actions/documents";
+import {
+  getSubscriptionSummary,
+  listExpiringSubscriptions,
+} from "@/lib/actions/subscriptions";
+import {
+  SUBSCRIPTION_KIND_LABELS,
+  SUBSCRIPTION_STATUS_LABELS,
+} from "@/lib/constants/subscriptions";
 import { formatCurrency } from "@/lib/utils/format";
+import {
+  formatDaysRemaining,
+  statusBadgeClass,
+} from "@/lib/utils/subscriptions";
+import { cn } from "@/lib/utils/cn";
 
 export default async function DashboardPage() {
-  const [metrics, cashbook] = await Promise.all([
+  const [metrics, cashbook, subSummary, expiring] = await Promise.all([
     getDashboardMetrics(),
     getCashbookSummary(),
+    getSubscriptionSummary(),
+    listExpiringSubscriptions(5),
   ]);
 
   const cards = [
@@ -43,6 +65,12 @@ export default async function DashboardPage() {
       icon: FileCheck,
       color: "text-green-700 bg-green-100",
     },
+    {
+      label: "Expiring (30d)",
+      value: String(subSummary.soon),
+      icon: CalendarClock,
+      color: "text-amber-800 bg-amber-100",
+    },
   ];
 
   return (
@@ -74,6 +102,57 @@ export default async function DashboardPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8 rounded-xl border border-gray-200 bg-surface p-6 shadow-card">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Subscriptions expiring soon
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Domains and renewals due within 30 days (or already expired)
+              </p>
+            </div>
+            <Link href="/subscriptions">
+              <Button variant="outline">View all</Button>
+            </Link>
+          </div>
+          {expiring.length === 0 ? (
+            <p className="mt-4 text-sm text-gray-500">
+              Nothing expiring in the next 30 days.
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-gray-100">
+              {expiring.map((row) => (
+                <li
+                  key={row.id}
+                  className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0"
+                >
+                  <div>
+                    <p className="font-medium text-gray-900">{row.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {SUBSCRIPTION_KIND_LABELS[row.kind]} · expires{" "}
+                      {row.expiry_date}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">
+                      {formatDaysRemaining(row.days_remaining)}
+                    </span>
+                    <span
+                      className={cn(
+                        "inline-flex rounded-full border px-2 py-0.5 text-xs font-medium",
+                        statusBadgeClass(row.status)
+                      )}
+                    >
+                      {SUBSCRIPTION_STATUS_LABELS[row.status]}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="mt-8 rounded-xl border border-gray-200 bg-surface p-6 shadow-card">
