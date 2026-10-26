@@ -202,7 +202,7 @@ export function SubscriptionsManager({
             {editingId ? "Edit subscription" : "New subscription"}
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            Do not store passwords here — use notes for account hints only.
+            For passwords and DUNS numbers, use Secure vault in the sidebar.
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">

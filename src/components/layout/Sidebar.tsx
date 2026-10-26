@@ -3,6 +3,7 @@
 import {
   CalendarClock,
   FileText,
+  KeyRound,
   FolderOpen,
   LayoutDashboard,
   List,
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/treasury", label: "Treasury", icon: Wallet },
   { href: "/library", label: "File library", icon: FolderOpen },
   { href: "/subscriptions", label: "Subscriptions", icon: CalendarClock },
+  { href: "/vault", label: "Secure vault", icon: KeyRound },
   {
     href: "/documents",
     label: "Invoices",

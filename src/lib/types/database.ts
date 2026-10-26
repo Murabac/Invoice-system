@@ -21,6 +21,12 @@ export type SubscriptionKind =
   | "license"
   | "other";
 export type BillingCycle = "monthly" | "yearly" | "one_time" | "other";
+export type VaultCategory =
+  | "password"
+  | "server"
+  | "company_id"
+  | "address"
+  | "other";
 
 export interface Database {
   invoice: {
@@ -373,6 +379,39 @@ export interface Database {
         };
         Relationships: [];
       };
+      company_vault_entries: {
+        Row: {
+          id: string;
+          title: string;
+          category: VaultCategory;
+          ciphertext: string;
+          iv: string;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          category: VaultCategory;
+          ciphertext: string;
+          iv: string;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          category?: VaultCategory;
+          ciphertext?: string;
+          iv?: string;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -393,6 +432,8 @@ export type LibraryFile =
   Database["invoice"]["Tables"]["library_files"]["Row"];
 export type Subscription =
   Database["invoice"]["Tables"]["subscriptions"]["Row"];
+export type CompanyVaultEntry =
+  Database["invoice"]["Tables"]["company_vault_entries"]["Row"];
 
 export type DocumentWithRelations = Document & {
   clients: Client | null;
