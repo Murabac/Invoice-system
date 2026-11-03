@@ -20,6 +20,12 @@ ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL \
     NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY \
     NEXT_TELEMETRY_DISABLED=1
 
+# Fail the Coolify build early if public Supabase env was not passed as build args
+RUN if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ] || [ -z "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then \
+      echo "ERROR: Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY as Coolify Build variables, then rebuild."; \
+      exit 1; \
+    fi
+
 RUN npm run build
 
 FROM node:20-alpine AS runner
