@@ -232,13 +232,34 @@ export async function deleteEntry(id: string) {
   const user = await getAuthUser();
   if (!user) return { error: "Unauthorized" };
 
+  const { count, error: linkError } = await supabase
+    .from("account_transactions")
+    .select("id", { count: "exact", head: true })
+    .eq("cashbook_entry_id", id);
+
+  if (linkError) return { error: linkError.message };
+  if ((count ?? 0) > 0) {
+    return {
+      error:
+        "This expense is linked to an account top-up. Delete or reverse it from Accounts instead.",
+    };
+  }
+
   const { error } = await supabase
     .from("cashbook_entries")
     .delete()
     .eq("id", id)
     .eq("user_id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.code === "23503") {
+      return {
+        error:
+          "This expense is linked to an account top-up. Delete or reverse it from Accounts instead.",
+      };
+    }
+    return { error: error.message };
+  }
 
   revalidatePath("/treasury");
   revalidatePath("/dashboard");

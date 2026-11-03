@@ -2,6 +2,7 @@
 
 import {
   CalendarClock,
+  CreditCard,
   FileText,
   KeyRound,
   FolderOpen,
@@ -27,6 +28,7 @@ import { NavLink } from "./NavLink";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/treasury", label: "Treasury", icon: Wallet },
+  { href: "/accounts", label: "Accounts", icon: CreditCard },
   { href: "/library", label: "File library", icon: FolderOpen },
   { href: "/subscriptions", label: "Subscriptions", icon: CalendarClock },
   { href: "/vault", label: "Secure vault", icon: KeyRound },

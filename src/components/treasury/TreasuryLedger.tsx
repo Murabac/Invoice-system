@@ -112,7 +112,7 @@ export function TreasuryLedger({
 
   return (
     <div className="space-y-6">
-      <div className="no-print grid gap-4 sm:grid-cols-3">
+      <div className="no-print grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <div className="rounded-xl border border-gray-200 bg-surface p-5 shadow-card">
           <p className="text-sm font-medium text-gray-500">Current balance</p>
           <p className="mt-2 text-2xl font-bold text-gray-900">
@@ -129,6 +129,18 @@ export function TreasuryLedger({
           <p className="text-sm font-medium text-gray-500">Expenses (MTD)</p>
           <p className="mt-2 text-2xl font-bold text-red-700">
             {formatCurrency(summary.expenseMtd)}
+          </p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-surface p-5 shadow-card">
+          <p className="text-sm font-medium text-gray-500">Total income</p>
+          <p className="mt-2 text-2xl font-bold text-green-700">
+            {formatCurrency(summary.totalIncome)}
+          </p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-surface p-5 shadow-card">
+          <p className="text-sm font-medium text-gray-500">Total expenses</p>
+          <p className="mt-2 text-2xl font-bold text-red-700">
+            {formatCurrency(summary.totalExpense)}
           </p>
         </div>
       </div>

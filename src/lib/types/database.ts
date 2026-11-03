@@ -27,6 +27,7 @@ export type VaultCategory =
   | "company_id"
   | "address"
   | "other";
+export type AccountTxnType = "top_up" | "spend";
 
 export interface Database {
   invoice: {
@@ -412,6 +413,69 @@ export interface Database {
         };
         Relationships: [];
       };
+      accounts: {
+        Row: {
+          id: string;
+          name: string;
+          notes: string | null;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          notes?: string | null;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          notes?: string | null;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      account_transactions: {
+        Row: {
+          id: string;
+          account_id: string;
+          txn_type: AccountTxnType;
+          amount: number;
+          txn_date: string;
+          description: string;
+          cashbook_entry_id: string | null;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          account_id: string;
+          txn_type: AccountTxnType;
+          amount: number;
+          txn_date?: string;
+          description: string;
+          cashbook_entry_id?: string | null;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          account_id?: string;
+          txn_type?: AccountTxnType;
+          amount?: number;
+          txn_date?: string;
+          description?: string;
+          cashbook_entry_id?: string | null;
+          created_by?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -434,6 +498,9 @@ export type Subscription =
   Database["invoice"]["Tables"]["subscriptions"]["Row"];
 export type CompanyVaultEntry =
   Database["invoice"]["Tables"]["company_vault_entries"]["Row"];
+export type Account = Database["invoice"]["Tables"]["accounts"]["Row"];
+export type AccountTransaction =
+  Database["invoice"]["Tables"]["account_transactions"]["Row"];
 
 export type DocumentWithRelations = Document & {
   clients: Client | null;
