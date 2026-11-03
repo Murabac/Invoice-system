@@ -28,6 +28,7 @@ export type VaultCategory =
   | "address"
   | "other";
 export type AccountTxnType = "top_up" | "spend";
+export type AccountBalanceSource = "transactions" | "treasury";
 
 export interface Database {
   invoice: {
@@ -418,6 +419,7 @@ export interface Database {
           id: string;
           name: string;
           notes: string | null;
+          balance_source: AccountBalanceSource;
           created_by: string;
           created_at: string;
           updated_at: string;
@@ -426,6 +428,7 @@ export interface Database {
           id?: string;
           name: string;
           notes?: string | null;
+          balance_source?: AccountBalanceSource;
           created_by: string;
           created_at?: string;
           updated_at?: string;
@@ -434,6 +437,7 @@ export interface Database {
           id?: string;
           name?: string;
           notes?: string | null;
+          balance_source?: AccountBalanceSource;
           created_by?: string;
           created_at?: string;
           updated_at?: string;

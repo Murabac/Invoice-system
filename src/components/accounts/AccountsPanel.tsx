@@ -13,16 +13,18 @@ import {
 import {
   createAccount,
   deleteAccount,
+  deleteAccountTransaction,
   spendFromAccount,
   topUpAccount,
   updateAccount,
+  updateAccountTransaction,
   type AccountInput,
   type AccountWithBalance,
 } from "@/lib/actions/accounts";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { formatCurrency } from "@/lib/utils/format";
-import type { AccountTransaction } from "@/lib/types/database";
+import type { AccountTransaction, AccountTxnType } from "@/lib/types/database";
 import { cn } from "@/lib/utils/cn";
 
 interface AccountsPanelProps {
@@ -35,6 +37,12 @@ type PanelMode =
   | { kind: "edit"; accountId: string }
   | { kind: "top_up"; accountId: string }
   | { kind: "spend"; accountId: string }
+  | {
+      kind: "edit_txn";
+      accountId: string;
+      txnId: string;
+      txnType: AccountTxnType;
+    }
   | null;
 
 const emptyAccountForm = (): AccountInput => ({
@@ -94,6 +102,22 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
     setError(null);
   }
 
+  function openEditTxn(txn: AccountTransaction) {
+    setSelectedId(txn.account_id);
+    setMode({
+      kind: "edit_txn",
+      accountId: txn.account_id,
+      txnId: txn.id,
+      txnType: txn.txn_type,
+    });
+    setTxnForm({
+      amount: Number(txn.amount),
+      txn_date: txn.txn_date,
+      description: txn.description,
+    });
+    setError(null);
+  }
+
   function closeForm() {
     setMode(null);
     setError(null);
@@ -122,19 +146,30 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
   function handleTxnSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!mode || (mode.kind !== "top_up" && mode.kind !== "spend")) return;
+    if (
+      !mode ||
+      (mode.kind !== "top_up" &&
+        mode.kind !== "spend" &&
+        mode.kind !== "edit_txn")
+    ) {
+      return;
+    }
 
     startTransition(async () => {
-      const payload = {
-        accountId: mode.accountId,
+      const fields = {
         amount: txnForm.amount,
         txn_date: txnForm.txn_date,
         description: txnForm.description,
       };
-      const result =
-        mode.kind === "top_up"
-          ? await topUpAccount(payload)
-          : await spendFromAccount(payload);
+
+      let result: { error?: string; success?: boolean };
+      if (mode.kind === "edit_txn") {
+        result = await updateAccountTransaction(mode.txnId, fields);
+      } else if (mode.kind === "top_up") {
+        result = await topUpAccount({ accountId: mode.accountId, ...fields });
+      } else {
+        result = await spendFromAccount({ accountId: mode.accountId, ...fields });
+      }
 
       if (result.error) {
         setError(result.error);
@@ -155,6 +190,24 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
       }
       if (selectedId === account.id) {
         setSelectedId(null);
+      }
+      closeForm();
+      router.refresh();
+    });
+  }
+
+  function handleDeleteTxn(txn: AccountTransaction) {
+    const label = txn.txn_type === "top_up" ? "top-up" : "spend";
+    const extra =
+      txn.txn_type === "top_up" && txn.cashbook_entry_id
+        ? " This will also remove the linked treasury expense."
+        : "";
+    if (!confirm(`Delete this ${label} record?${extra}`)) return;
+    startTransition(async () => {
+      const result = await deleteAccountTransaction(txn.id);
+      if (result.error) {
+        setError(result.error);
+        return;
       }
       closeForm();
       router.refresh();
@@ -217,8 +270,11 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
                   {formatCurrency(account.balance)}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  {account.transaction_count} transaction
-                  {account.transaction_count === 1 ? "" : "s"}
+                  {account.balance_source === "treasury"
+                    ? "Treasury current balance"
+                    : `${account.transaction_count} transaction${
+                        account.transaction_count === 1 ? "" : "s"
+                      }`}
                 </p>
               </button>
             );
@@ -235,24 +291,31 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
               </h2>
               <p className="text-sm text-gray-500">
                 Balance {formatCurrency(selectedAccount.balance)}
+                {selectedAccount.balance_source === "treasury"
+                  ? " · mirrors Treasury"
+                  : ""}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                onClick={() => openTopUp(selectedAccount)}
-              >
-                <PlusCircle className="h-4 w-4" />
-                Top up
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => openSpend(selectedAccount)}
-              >
-                <MinusCircle className="h-4 w-4" />
-                Record spend
-              </Button>
+              {selectedAccount.balance_source !== "treasury" && (
+                <>
+                  <Button
+                    type="button"
+                    onClick={() => openTopUp(selectedAccount)}
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                    Top up
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => openSpend(selectedAccount)}
+                  >
+                    <MinusCircle className="h-4 w-4" />
+                    Record spend
+                  </Button>
+                </>
+              )}
               <Button
                 type="button"
                 variant="ghost"
@@ -290,13 +353,28 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
                     <th className="px-4 py-3 text-right font-semibold text-gray-600">
                       Amount
                     </th>
+                    <th className="px-4 py-3 text-right font-semibold text-gray-600">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {selectedTxns.length === 0 ? (
+                  {selectedAccount.balance_source === "treasury" ? (
                     <tr>
                       <td
-                        colSpan={4}
+                        colSpan={5}
+                        className="px-4 py-10 text-center text-gray-500"
+                      >
+                        This account always shows the Treasury current balance
+                        (total income − total expenses). Manage money in
+                        Treasury — Mastercard top-ups reduce this balance
+                        automatically.
+                      </td>
+                    </tr>
+                  ) : selectedTxns.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={5}
                         className="px-4 py-10 text-center text-gray-500"
                       >
                         No transactions yet. Top up this account to fund its
@@ -312,7 +390,7 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
                         </td>
                         <td className="px-4 py-3 capitalize text-gray-700">
                           {txn.txn_type === "top_up" ? "Top up" : "Spend"}
-                          {txn.txn_type === "top_up" && (
+                          {txn.txn_type === "top_up" && txn.cashbook_entry_id && (
                             <span className="mt-0.5 block text-xs text-gray-400">
                               Linked to treasury
                             </span>
@@ -331,6 +409,27 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
                         >
                           {txn.txn_type === "top_up" ? "+" : "−"}
                           {formatCurrency(Number(txn.amount))}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-right">
+                          <div className="inline-flex gap-1">
+                            <button
+                              type="button"
+                              className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-primary"
+                              aria-label="Edit transaction"
+                              onClick={() => openEditTxn(txn)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              className="rounded-lg p-2 text-gray-500 hover:bg-red-50 hover:text-red-600"
+                              aria-label="Delete transaction"
+                              disabled={isPending}
+                              onClick={() => handleDeleteTxn(txn)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -388,18 +487,31 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
         </form>
       )}
 
-      {mode && (mode.kind === "top_up" || mode.kind === "spend") && (
+      {mode &&
+        (mode.kind === "top_up" ||
+          mode.kind === "spend" ||
+          mode.kind === "edit_txn") && (
         <form
           onSubmit={handleTxnSubmit}
           className="rounded-xl border border-primary/20 bg-primary/5 p-6 shadow-card"
         >
           <h3 className="text-lg font-semibold text-gray-900">
-            {mode.kind === "top_up" ? "Top up account" : "Record spend"}
+            {mode.kind === "edit_txn"
+              ? mode.txnType === "top_up"
+                ? "Edit top up"
+                : "Edit spend"
+              : mode.kind === "top_up"
+                ? "Top up account"
+                : "Record spend"}
           </h3>
           <p className="mt-1 text-sm text-gray-600">
-            {mode.kind === "top_up"
-              ? "Creates a treasury expense and increases this account’s balance."
-              : "Deducts from this account only — no new treasury expense."}
+            {mode.kind === "edit_txn"
+              ? mode.txnType === "top_up"
+                ? "Updates this top-up and its linked treasury expense (if any)."
+                : "Updates this spend on the card only."
+              : mode.kind === "top_up"
+                ? "Creates a treasury expense and increases this account’s balance."
+                : "Deducts from this account only — no new treasury expense."}
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
@@ -444,7 +556,8 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
                   setTxnForm((f) => ({ ...f, description: e.target.value }))
                 }
                 placeholder={
-                  mode.kind === "top_up"
+                  mode.kind === "top_up" ||
+                  (mode.kind === "edit_txn" && mode.txnType === "top_up")
                     ? "Server monthly prepaid load"
                     : "Cursor subscription"
                 }
@@ -456,9 +569,11 @@ export function AccountsPanel({ accounts, transactions }: AccountsPanelProps) {
             <Button type="submit" disabled={isPending}>
               {isPending
                 ? "Saving…"
-                : mode.kind === "top_up"
-                  ? "Top up"
-                  : "Record spend"}
+                : mode.kind === "edit_txn"
+                  ? "Save changes"
+                  : mode.kind === "top_up"
+                    ? "Top up"
+                    : "Record spend"}
             </Button>
             <Button type="button" variant="ghost" onClick={closeForm}>
               Cancel

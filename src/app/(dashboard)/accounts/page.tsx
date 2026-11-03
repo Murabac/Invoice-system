@@ -15,7 +15,7 @@ export default async function AccountsPage() {
     <>
       <Header
         title="Accounts"
-        description="Prepaid cards and wallets — top up creates a treasury expense; spends only reduce the balance"
+        description="Prepaid cards and wallets — top up creates a treasury expense; spends only reduce the card balance"
       />
       <div className="page-content">
         <AccountsPanel accounts={accounts} transactions={transactions} />
