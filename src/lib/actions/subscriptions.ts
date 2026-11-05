@@ -15,6 +15,7 @@ import { getAuthUser, getSupabase } from "@/lib/supabase/get-user";
 import type { Subscription } from "@/lib/types/database";
 
 export type SubscriptionInput = {
+  client_id: string;
   name: string;
   kind: SubscriptionKind;
   vendor: string;
@@ -59,6 +60,7 @@ function enrich(row: Subscription): SubscriptionWithMeta {
 }
 
 type NormalizedSubscription = {
+  client_id: string;
   name: string;
   kind: SubscriptionKind;
   vendor: string;
@@ -75,26 +77,30 @@ function normalizeInput(input: SubscriptionInput): {
   data: NormalizedSubscription;
   error?: string;
 } {
+  const client_id = input.client_id.trim();
   const name = input.name.trim();
+  const emptyBase = {
+    ...input,
+    client_id,
+    name,
+    billing_cycle: null as BillingCycle | null,
+    renewal_amount: null as number | null,
+  };
+
+  if (!client_id) {
+    return { data: emptyBase, error: "Client is required" };
+  }
+
   if (!name) {
-    return {
-      data: { ...input, name, billing_cycle: null, renewal_amount: null },
-      error: "Name is required",
-    };
+    return { data: emptyBase, error: "Name is required" };
   }
 
   if (!SUBSCRIPTION_KINDS.includes(input.kind)) {
-    return {
-      data: { ...input, name, billing_cycle: null, renewal_amount: null },
-      error: "Invalid subscription type",
-    };
+    return { data: emptyBase, error: "Invalid subscription type" };
   }
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.expiry_date)) {
-    return {
-      data: { ...input, name, billing_cycle: null, renewal_amount: null },
-      error: "Invalid expiry date",
-    };
+    return { data: emptyBase, error: "Invalid expiry date" };
   }
 
   const billing = input.billing_cycle.trim();
@@ -102,10 +108,7 @@ function normalizeInput(input: SubscriptionInput): {
     ? (billing as BillingCycle)
     : null;
   if (billing_cycle && !BILLING_CYCLES.includes(billing_cycle)) {
-    return {
-      data: { ...input, name, billing_cycle: null, renewal_amount: null },
-      error: "Invalid billing cycle",
-    };
+    return { data: emptyBase, error: "Invalid billing cycle" };
   }
 
   const renewal_amount =
@@ -117,6 +120,7 @@ function normalizeInput(input: SubscriptionInput): {
 
   return {
     data: {
+      client_id,
       name,
       kind: input.kind,
       vendor: input.vendor.trim(),
@@ -202,6 +206,7 @@ export async function createSubscription(input: SubscriptionInput) {
 
   const supabase = await getSupabase();
   const { error } = await supabase.from("subscriptions").insert({
+    client_id: d.client_id,
     name: d.name,
     kind: d.kind,
     vendor: d.vendor || null,
@@ -233,6 +238,7 @@ export async function updateSubscription(id: string, input: SubscriptionInput) {
   const { error } = await supabase
     .from("subscriptions")
     .update({
+      client_id: d.client_id,
       name: d.name,
       kind: d.kind,
       vendor: d.vendor || null,

@@ -343,6 +343,7 @@ export interface Database {
           auto_renew: boolean;
           website_url: string | null;
           notes: string | null;
+          client_id: string | null;
           created_by: string;
           created_at: string;
           updated_at: string;
@@ -359,6 +360,7 @@ export interface Database {
           auto_renew?: boolean;
           website_url?: string | null;
           notes?: string | null;
+          client_id?: string | null;
           created_by: string;
           created_at?: string;
           updated_at?: string;
@@ -375,6 +377,7 @@ export interface Database {
           auto_renew?: boolean;
           website_url?: string | null;
           notes?: string | null;
+          client_id?: string | null;
           created_by?: string;
           created_at?: string;
           updated_at?: string;

@@ -1,8 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
-import { ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  ChevronDown,
+  ExternalLink,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import {
   createSubscription,
   deleteSubscription,
@@ -28,13 +34,16 @@ import {
   statusBadgeClass,
 } from "@/lib/utils/subscriptions";
 import { cn } from "@/lib/utils/cn";
+import type { Client } from "@/lib/types/database";
 
 interface SubscriptionsManagerProps {
+  clients: Client[];
   subscriptions: SubscriptionWithMeta[];
   summary: SubscriptionSummary;
 }
 
-const emptyForm = (): SubscriptionInput => ({
+const emptyForm = (clientId = ""): SubscriptionInput => ({
+  client_id: clientId,
   name: "",
   kind: "domain",
   vendor: "",
@@ -48,6 +57,7 @@ const emptyForm = (): SubscriptionInput => ({
 });
 
 export function SubscriptionsManager({
+  clients,
   subscriptions,
   summary,
 }: SubscriptionsManagerProps) {
@@ -55,12 +65,15 @@ export function SubscriptionsManager({
   const [isPending, startTransition] = useTransition();
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<SubscriptionInput>(emptyForm);
+  const [form, setForm] = useState<SubscriptionInput>(emptyForm());
   const [error, setError] = useState<string | null>(null);
   const [kindFilter, setKindFilter] = useState<SubscriptionKind | "all">("all");
   const [statusFilter, setStatusFilter] = useState<
     SubscriptionStatus | "all" | "soon"
   >("all");
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
+
+  const filtersActive = kindFilter !== "all" || statusFilter !== "all";
 
   const filtered = useMemo(() => {
     return subscriptions.filter((row) => {
@@ -77,9 +90,52 @@ export function SubscriptionsManager({
     });
   }, [subscriptions, kindFilter, statusFilter]);
 
-  function openCreate() {
+  const byClient = useMemo(() => {
+    const map = new Map<string, SubscriptionWithMeta[]>();
+    for (const row of filtered) {
+      if (!row.client_id) continue;
+      const list = map.get(row.client_id) ?? [];
+      list.push(row);
+      map.set(row.client_id, list);
+    }
+    return map;
+  }, [filtered]);
+
+  const unassigned = useMemo(
+    () => filtered.filter((row) => !row.client_id),
+    [filtered]
+  );
+
+  const visibleClients = useMemo(() => {
+    if (!filtersActive) return clients;
+    return clients.filter((c) => (byClient.get(c.id)?.length ?? 0) > 0);
+  }, [clients, byClient, filtersActive]);
+
+  useEffect(() => {
+    const next = new Set<string>();
+    for (const client of clients) {
+      if ((byClient.get(client.id)?.length ?? 0) > 0) {
+        next.add(client.id);
+      }
+    }
+    if (unassigned.length > 0) next.add("__unassigned__");
+    setExpandedIds(next);
+    // Re-expand matches when filters change; empty clients stay collapsed
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally keyed on filters
+  }, [kindFilter, statusFilter, clients, byClient, unassigned]);
+
+  function toggleExpanded(id: string) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function openCreate(clientId = "") {
     setEditingId(null);
-    setForm(emptyForm());
+    setForm(emptyForm(clientId || clients[0]?.id || ""));
     setFormOpen(true);
     setError(null);
   }
@@ -87,6 +143,7 @@ export function SubscriptionsManager({
   function openEdit(row: SubscriptionWithMeta) {
     setEditingId(row.id);
     setForm({
+      client_id: row.client_id ?? "",
       name: row.name,
       kind: row.kind,
       vendor: row.vendor ?? "",
@@ -121,6 +178,9 @@ export function SubscriptionsManager({
       if (result.error) {
         setError(result.error);
         return;
+      }
+      if (form.client_id) {
+        setExpandedIds((prev) => new Set(prev).add(form.client_id));
       }
       closeForm();
       router.refresh();
@@ -187,7 +247,7 @@ export function SubscriptionsManager({
             { value: "ok", label: "Active" },
           ]}
         />
-        <Button type="button" onClick={openCreate} className="ml-auto">
+        <Button type="button" onClick={() => openCreate()} className="ml-auto">
           <Plus className="h-4 w-4" />
           Add subscription
         </Button>
@@ -205,6 +265,31 @@ export function SubscriptionsManager({
             For passwords and DUNS numbers, use Secure vault in the sidebar.
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Client
+              </label>
+              <select
+                required
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                value={form.client_id}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, client_id: e.target.value }))
+                }
+              >
+                <option value="">Select a client…</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              {clients.length === 0 && (
+                <p className="mt-1 text-xs text-amber-700">
+                  Add a client first before creating subscriptions.
+                </p>
+              )}
+            </div>
             <div className="sm:col-span-2">
               <label className="mb-1 block text-sm font-medium text-gray-700">
                 Name
@@ -356,7 +441,7 @@ export function SubscriptionsManager({
           </div>
           {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
           <div className="mt-4 flex gap-2">
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" disabled={isPending || clients.length === 0}>
               {isPending ? "Saving…" : "Save"}
             </Button>
             <Button type="button" variant="ghost" onClick={closeForm}>
@@ -370,126 +455,263 @@ export function SubscriptionsManager({
         <p className="text-sm text-red-600">{error}</p>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-surface shadow-card">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 text-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">
-                  Type
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">
-                  Vendor
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">
-                  Expires
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">
-                  Remaining
-                </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600">
-                  Renewal
-                </th>
-                <th className="px-4 py-3 text-right font-semibold text-gray-600">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filtered.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-10 text-center text-gray-500"
-                  >
-                    No subscriptions match your filters. Add domains, SaaS, and
-                    other renewals to track expiry dates.
-                  </td>
-                </tr>
-              ) : (
-                filtered.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50/80">
-                    <td className="px-4 py-3">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-medium text-gray-900">
-                          {row.name}
-                        </span>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span
-                            className={cn(
-                              "inline-flex rounded-full border px-2 py-0.5 text-xs font-medium",
-                              statusBadgeClass(row.status)
-                            )}
-                          >
-                            {SUBSCRIPTION_STATUS_LABELS[row.status]}
-                          </span>
-                          {row.auto_renew && (
-                            <span className="text-xs text-gray-500">
-                              Auto-renew
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-gray-700">
-                      {SUBSCRIPTION_KIND_LABELS[row.kind]}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {row.vendor || "—"}
-                    </td>
-                    <td className="px-4 py-3 text-gray-700">
-                      {row.expiry_date}
-                    </td>
-                    <td className="px-4 py-3 text-gray-700">
-                      {formatDaysRemaining(row.days_remaining)}
-                    </td>
-                    <td className="px-4 py-3 text-gray-700">
-                      {row.renewal_amount != null
-                        ? formatCurrency(Number(row.renewal_amount))
-                        : "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1">
-                        {row.website_url && (
-                          <a
-                            href={row.website_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-primary"
-                            title="Open portal"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => openEdit(row)}
-                          className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-primary"
-                          title="Edit"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(row.id)}
-                          disabled={isPending}
-                          className="rounded-lg p-2 text-gray-500 hover:bg-red-50 hover:text-red-600"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {clients.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-gray-300 bg-surface px-6 py-12 text-center text-sm text-gray-500">
+          No clients yet. Add a client first, then attach domains and renewals
+          under them.
         </div>
+      ) : (
+        <div className="space-y-3">
+          {visibleClients.map((client) => {
+            const rows = byClient.get(client.id) ?? [];
+            const expanded = expandedIds.has(client.id);
+            const hasAttention = rows.some(
+              (r) =>
+                r.status === "expired" ||
+                r.status === "critical" ||
+                r.status === "soon"
+            );
+            return (
+              <ClientAccordion
+                key={client.id}
+                title={client.name}
+                count={rows.length}
+                expanded={expanded}
+                hasAttention={hasAttention}
+                onToggle={() => toggleExpanded(client.id)}
+                onAdd={() => openCreate(client.id)}
+              >
+                <SubscriptionTable
+                  rows={rows}
+                  emptyLabel="No subscriptions yet for this client."
+                  isPending={isPending}
+                  onEdit={openEdit}
+                  onDelete={handleDelete}
+                />
+              </ClientAccordion>
+            );
+          })}
+
+          {unassigned.length > 0 && (
+            <ClientAccordion
+              title="Unassigned"
+              count={unassigned.length}
+              expanded={expandedIds.has("__unassigned__")}
+              hasAttention={unassigned.some(
+                (r) =>
+                  r.status === "expired" ||
+                  r.status === "critical" ||
+                  r.status === "soon"
+              )}
+              onToggle={() => toggleExpanded("__unassigned__")}
+            >
+              <SubscriptionTable
+                rows={unassigned}
+                emptyLabel="No unassigned subscriptions."
+                isPending={isPending}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+              />
+            </ClientAccordion>
+          )}
+
+          {filtersActive && visibleClients.length === 0 && unassigned.length === 0 && (
+            <div className="rounded-xl border border-gray-200 bg-surface px-6 py-10 text-center text-sm text-gray-500">
+              No subscriptions match your filters.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ClientAccordion({
+  title,
+  count,
+  expanded,
+  hasAttention,
+  onToggle,
+  onAdd,
+  children,
+}: {
+  title: string;
+  count: number;
+  expanded: boolean;
+  hasAttention: boolean;
+  onToggle: () => void;
+  onAdd?: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-surface shadow-card">
+      <div className="flex items-center gap-2 border-b border-gray-100 bg-gray-50/80 px-3 py-2 sm:px-4">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-1 py-2 text-left hover:bg-gray-100"
+          aria-expanded={expanded}
+        >
+          <ChevronDown
+            className={cn(
+              "h-5 w-5 shrink-0 text-gray-500 transition-transform",
+              expanded ? "rotate-0" : "-rotate-90"
+            )}
+          />
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-gray-900">{title}</p>
+            <p className="text-xs text-gray-500">
+              {count} subscription{count === 1 ? "" : "s"}
+              {hasAttention ? " · attention needed" : ""}
+            </p>
+          </div>
+        </button>
+        {onAdd && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onAdd}
+            className="shrink-0"
+          >
+            <Plus className="h-4 w-4" />
+            Add
+          </Button>
+        )}
       </div>
+      {expanded && children}
+    </div>
+  );
+}
+
+function SubscriptionTable({
+  rows,
+  emptyLabel,
+  isPending,
+  onEdit,
+  onDelete,
+}: {
+  rows: SubscriptionWithMeta[];
+  emptyLabel: string;
+  isPending: boolean;
+  onEdit: (row: SubscriptionWithMeta) => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200 text-sm">
+        <thead className="bg-white">
+          <tr>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">
+              Name
+            </th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">
+              Type
+            </th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">
+              Vendor
+            </th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">
+              Expires
+            </th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">
+              Remaining
+            </th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600">
+              Renewal
+            </th>
+            <th className="px-4 py-3 text-right font-semibold text-gray-600">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {rows.length === 0 ? (
+            <tr>
+              <td
+                colSpan={7}
+                className="px-4 py-8 text-center text-gray-500"
+              >
+                {emptyLabel}
+              </td>
+            </tr>
+          ) : (
+            rows.map((row) => (
+              <tr key={row.id} className="hover:bg-gray-50/80">
+                <td className="px-4 py-3">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium text-gray-900">
+                      {row.name}
+                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={cn(
+                          "inline-flex rounded-full border px-2 py-0.5 text-xs font-medium",
+                          statusBadgeClass(row.status)
+                        )}
+                      >
+                        {SUBSCRIPTION_STATUS_LABELS[row.status]}
+                      </span>
+                      {row.auto_renew && (
+                        <span className="text-xs text-gray-500">
+                          Auto-renew
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-gray-700">
+                  {SUBSCRIPTION_KIND_LABELS[row.kind]}
+                </td>
+                <td className="px-4 py-3 text-gray-600">
+                  {row.vendor || "—"}
+                </td>
+                <td className="px-4 py-3 text-gray-700">{row.expiry_date}</td>
+                <td className="px-4 py-3 text-gray-700">
+                  {formatDaysRemaining(row.days_remaining)}
+                </td>
+                <td className="px-4 py-3 text-gray-700">
+                  {row.renewal_amount != null
+                    ? formatCurrency(Number(row.renewal_amount))
+                    : "—"}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex justify-end gap-1">
+                    {row.website_url && (
+                      <a
+                        href={row.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-primary"
+                        title="Open portal"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => onEdit(row)}
+                      className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-primary"
+                      title="Edit"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDelete(row.id)}
+                      disabled={isPending}
+                      className="rounded-lg p-2 text-gray-500 hover:bg-red-50 hover:text-red-600"
+                      title="Delete"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
